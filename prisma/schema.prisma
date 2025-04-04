@@ -12,32 +12,31 @@ datasource db {
 
 enum Role {
   USER
- EMPLOYER
+  EMPLOYER
   ADMIN
 }
 
-
-
 model User {
-  id                   String    @id @default(cuid())
+  id                   String        @id @default(cuid())
   name                 String
-  email                String    @unique
+  email                String        @unique
   emailVerified        DateTime?
   token                String?
-  image                String? @default("https://hrty.vercel.app/zO2iET")
-  isMachine            Boolean   @default(false)
+  image                String?       @default("https://hrty.vercel.app/zO2iET")
+  isMachine            Boolean       @default(false)
   passwordHash         String?
-  invalidLoginAttempts Int       @default(0)
-  role                 Role      @default(USER)
+  invalidLoginAttempts Int           @default(0)
+  role                 Role          @default(USER)
   // System
   lockedAt             DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt()
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt()
   // Relations
-  feedbacks    Feedback[]
-  accounts     Account[]
-  sessions     Session[]
-  activityLogs ActivityLog[] @relation("UserActivityLog")
+  feedbacks            Feedback[]
+  accounts             Account[]
+  sessions             Session[]
+  activityLogs         ActivityLog[] @relation("UserActivityLog")
+  jobs                 Job[]
 }
 
 model ActivityLog {
@@ -104,3 +103,44 @@ model Feedback {
   updatedAt DateTime @default(now()) @map(name: "updated_at")
 }
 
+enum JobType {
+  REMOTE
+  ONSITE
+  FULLTIME
+  PART_TIME
+  CONTRACT
+}
+
+enum ExperienceLevel {
+  entry
+  mid
+  senior
+  executive
+}
+
+enum StatusTypes {
+  active
+  filled
+  expired
+}
+
+model Job {
+  id             String           @id @default(cuid())
+  title          String
+  description    String?
+  company        String?
+  salary         Int
+  jobType        JobType
+  experience     ExperienceLevel?
+  city           String?
+  country        String?
+  status         StatusTypes      @default(active)
+  requiredSkills String[] // Array of required skills
+  deadline       DateTime
+
+  // Timestamps for record tracking
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}

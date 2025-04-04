@@ -1,3 +1,5 @@
+import { Job } from "@prisma/client";
+
 export interface LeaveRequest {
   id: string;
   employeeId: string;
@@ -26,3 +28,21 @@ export interface LeaveStatisticsData {
   approved: number;
   rejected: number;
 }
+
+export type JobQueriesResponse = {
+  data: Job[];
+  error?: string;
+};
+
+// For single contact queries
+export type SingleJobQueryResponse = {
+  data: Job | null;
+  error?: string;
+};
+
+// For mutation operations
+export type MutationJobResponse = {
+  success: boolean;
+  data?: Job;
+  error?: string;
+};
