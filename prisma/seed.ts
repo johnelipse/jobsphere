@@ -38,13 +38,13 @@ async function main() {
     ];
 
     for (const user of users) {
-      await db.user.upsert({
+      await tx.user.upsert({
         where: { email: user.email },
         update: {},
         create: user,
       });
     }
-    const jobCreator = await db.user.findUnique({
+    const jobCreator = await tx.user.findUnique({
       where: {
         email: "employer@gmail.com",
       },
@@ -1645,7 +1645,7 @@ async function main() {
       await tx.job.create({
         data: job,
       });
-         }
+    }
 
     console.log("Seeding completed.");
   });

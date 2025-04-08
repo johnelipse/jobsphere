@@ -293,6 +293,7 @@ import {
   BadgeEuro,
   BarChart3,
   DollarSign,
+  File,
   FilePlus2,
   Flag,
   LayoutGrid,
@@ -328,6 +329,12 @@ export const data = [
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutGrid,
+    roles: ["ADMIN", "EMPLOYER"],
+  },
+  {
+    title: "Job Managment",
+    href: "/dashboard/jobs",
+    icon: File,
     roles: ["ADMIN", "EMPLOYER"],
   },
   {

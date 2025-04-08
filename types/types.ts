@@ -43,6 +43,6 @@ export type SingleJobQueryResponse = {
 // For mutation operations
 export type MutationJobResponse = {
   success: boolean;
-  data?: Job;
+  data?: Job | null;
   error?: string;
 };
