@@ -1,5 +1,11 @@
 import { db } from "../lib/db";
-import { ExperienceLevel, JobType, Role, StatusTypes } from "@prisma/client";
+import {
+  ExperienceLevel,
+  JobType,
+  Role,
+  Status,
+  StatusTypes,
+} from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
 async function main() {
@@ -10,7 +16,9 @@ async function main() {
     await tx.session.deleteMany({});
     await tx.account.deleteMany({});
     await tx.user.deleteMany({});
+    await tx.category.deleteMany({});
     await tx.job.deleteMany({});
+    await tx.application.deleteMany({});
     // Hash passwords
     const userPasswordHash = await bcrypt.hash("User@2025", 10);
     const employerPasswordHash = await bcrypt.hash("Employer@2025", 10);
@@ -22,18 +30,69 @@ async function main() {
         email: "user@gmail.com",
         passwordHash: userPasswordHash,
         role: Role.USER,
+
+        emailVerified: null,
+        headline: "Aspiring Frontend Developer",
+        summary: "Passionate about building web applications.",
+        skills: ["JavaScript", "React", "CSS"],
+        city: "Kampala",
+        state: "Central",
+        country: "Uganda",
+        token: null,
+        resume: null,
+        linkedin: "https://linkedin.com/in/johndoe",
+        github: "https://github.com/johndoe",
+        website: "https://johndoe.dev",
+        image: "https://hrty.vercel.app/zO2iET",
+        isMachine: false,
+        invalidLoginAttempts: 0,
+        lockedAt: null,
       },
       {
         name: "Jane Trust",
         email: "employer@gmail.com",
         passwordHash: employerPasswordHash,
         role: Role.EMPLOYER,
+
+        emailVerified: null,
+        headline: "Hiring Manager at TechCorp",
+        summary: "Looking to connect with skilled developers.",
+        skills: [],
+        city: "Nairobi",
+        state: "Nairobi County",
+        country: "Kenya",
+        token: null,
+        resume: null,
+        linkedin: "https://linkedin.com/in/janetrust",
+        github: null,
+        website: "https://techcorp.com",
+        image: "https://hrty.vercel.app/zO2iET",
+        isMachine: false,
+        invalidLoginAttempts: 0,
+        lockedAt: null,
       },
       {
         name: "Admin User",
         email: "admin@gmail.com",
         passwordHash: adminPasswordHash,
         role: Role.ADMIN,
+
+        emailVerified: null,
+        headline: "System Administrator",
+        summary: "Managing platform and user access.",
+        skills: ["Node.js", "DevOps"],
+        city: "Lagos",
+        state: "Lagos State",
+        country: "Nigeria",
+        token: null,
+        resume: null,
+        linkedin: null,
+        github: null,
+        website: null,
+        image: "https://hrty.vercel.app/zO2iET",
+        isMachine: false,
+        invalidLoginAttempts: 0,
+        lockedAt: null,
       },
     ];
 
@@ -44,6 +103,7 @@ async function main() {
         create: user,
       });
     }
+    console.log("user created");
     const jobCreator = await tx.user.findUnique({
       where: {
         email: "employer@gmail.com",
@@ -53,6 +113,57 @@ async function main() {
       console.log("User not available");
       return;
     }
+
+    const categories = [
+      {
+        title: "Information Technology",
+        slug: "information-technology",
+      },
+      {
+        title: "Healthcare and Medical",
+        slug: "healthcare-medical",
+      },
+      {
+        title: "Finance and Accounting",
+        slug: "finance-accounting",
+      },
+      {
+        title: "Education and Training",
+        slug: "education-training",
+      },
+      {
+        title: "Marketing and Communications",
+        slug: "marketing-communications",
+      },
+      {
+        title: "Engineering",
+        slug: "engineering",
+      },
+      {
+        title: "Sales and Business Development",
+        slug: "sales-business-development",
+      },
+      {
+        title: "Customer Service",
+        slug: "customer-service",
+      },
+      {
+        title: "Human Resources",
+        slug: "human-resources",
+      },
+      {
+        title: "Logisticsa and Supply Chain",
+        slug: "logistics-supply-chain",
+      },
+    ];
+
+    for (const category of categories) {
+      await tx.category.create({
+        data: category,
+      });
+    }
+    console.log("Category created");
+    const allCategories = await tx.category.findMany({});
 
     const jobs = [
       {
@@ -65,6 +176,7 @@ async function main() {
         experience: ExperienceLevel.mid,
         city: "Mountain View",
         country: "USA",
+        categoryId: allCategories[0].id,
         status: StatusTypes.active,
         requiredSkills: ["Python", "C++", "Algorithms"],
         deadline: "2025-10-01T00:00:00.000Z",
@@ -80,6 +192,7 @@ async function main() {
         experience: ExperienceLevel.mid,
         city: "Redmond",
         country: "USA",
+        categoryId: allCategories[0].id,
         status: StatusTypes.active,
         requiredSkills: ["Python", "Machine Learning", "Statistics"],
         deadline: "2025-10-02T00:00:00.000Z",
@@ -94,6 +207,7 @@ async function main() {
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
         city: "Seattle",
+        categoryId: allCategories[0].id,
         country: "USA",
         status: StatusTypes.active,
         requiredSkills: ["Product Strategy", "Communication", "Agile"],
@@ -111,6 +225,7 @@ async function main() {
         city: "Menlo Park",
         country: "USA",
         status: StatusTypes.active,
+        categoryId: allCategories[0].id,
         requiredSkills: ["Digital Marketing", "SEO", "Content Strategy"],
         deadline: "2025-10-04T00:00:00.000Z",
         userId: jobCreator.id,
@@ -125,6 +240,7 @@ async function main() {
         experience: ExperienceLevel.entry,
         city: "Cupertino",
         country: "USA",
+        categoryId: allCategories[0].id,
         status: StatusTypes.active,
         requiredSkills: ["Sales", "Customer Relationship", "Negotiation"],
         deadline: "2025-10-05T00:00:00.000Z",
@@ -141,6 +257,7 @@ async function main() {
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
+        categoryId: allCategories[1].id,
         requiredSkills: ["Financial Modeling", "Excel", "Analysis"],
         deadline: "2025-10-06T00:00:00.000Z",
         userId: jobCreator.id,
@@ -153,6 +270,7 @@ async function main() {
         salary: 90000,
         jobType: JobType.ONSITE,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[1].id,
         city: "Armonk",
         country: "USA",
         status: StatusTypes.active,
@@ -167,6 +285,7 @@ async function main() {
         company: "Adobe",
         salary: 95000,
         jobType: JobType.REMOTE,
+        categoryId: allCategories[1].id,
         experience: ExperienceLevel.mid,
         city: "San Jose",
         country: "USA",
@@ -177,6 +296,7 @@ async function main() {
       },
       {
         title: "Systems Administrator",
+        categoryId: allCategories[1].id,
         description:
           "Cisco is looking for a Systems Administrator to manage, secure, and optimize network infrastructure across our global operations.",
         company: "Cisco",
@@ -197,6 +317,7 @@ async function main() {
         company: "Dell",
         salary: 80000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[1].id,
         experience: ExperienceLevel.entry,
         city: "Round Rock",
         country: "USA",
@@ -216,6 +337,7 @@ async function main() {
         company: "Netflix",
         salary: 135000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[2].id,
         experience: ExperienceLevel.senior,
         city: "Los Gatos",
         country: "USA",
@@ -231,6 +353,7 @@ async function main() {
         company: "Palo Alto Networks",
         salary: 125000,
         jobType: JobType.ONSITE,
+        categoryId: allCategories[2].id,
         experience: ExperienceLevel.mid,
         city: "Santa Clara",
         country: "USA",
@@ -246,6 +369,7 @@ async function main() {
         company: "Accenture",
         salary: 100000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[2].id,
         experience: ExperienceLevel.entry,
         city: "Chicago",
         country: "USA",
@@ -265,6 +389,7 @@ async function main() {
         company: "Oracle",
         salary: 130000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[2].id,
         experience: ExperienceLevel.senior,
         city: "Redwood City",
         country: "USA",
@@ -280,6 +405,7 @@ async function main() {
         company: "Uber",
         salary: 125000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[3].id,
         experience: ExperienceLevel.mid,
         city: "San Francisco",
         country: "USA",
@@ -293,6 +419,7 @@ async function main() {
         description:
           "Airbnb is seeking a UX/UI Designer to create seamless user interfaces and engaging user experiences for our hospitality platform.",
         company: "Airbnb",
+        categoryId: allCategories[3].id,
         salary: 115000,
         jobType: JobType.REMOTE,
         experience: ExperienceLevel.mid,
@@ -309,6 +436,7 @@ async function main() {
           "AWS seeks a Cloud Architect to design, implement, and manage scalable cloud infrastructures for our enterprise clients.",
         company: "AWS",
         salary: 150000,
+        categoryId: allCategories[3].id,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
         city: "Seattle",
@@ -324,6 +452,7 @@ async function main() {
           "Tesla is hiring a Machine Learning Engineer to develop advanced algorithms for autonomous driving and smart vehicle systems.",
         company: "Tesla",
         salary: 145000,
+        categoryId: allCategories[3].id,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
         city: "Palo Alto",
@@ -339,6 +468,7 @@ async function main() {
           "Intel requires a Quality Assurance Engineer to implement test plans, automate testing processes, and ensure high-quality product releases.",
         company: "Intel",
         salary: 110000,
+        categoryId: allCategories[3].id,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
         city: "Santa Clara",
@@ -356,6 +486,7 @@ async function main() {
         salary: 135000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[4].id,
         city: "San Francisco",
         country: "USA",
         status: StatusTypes.active,
@@ -371,6 +502,7 @@ async function main() {
         salary: 120000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[4].id,
         city: "Walldorf",
         country: "Germany",
         status: StatusTypes.active,
@@ -386,6 +518,7 @@ async function main() {
         salary: 105000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[4].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -401,6 +534,7 @@ async function main() {
         salary: 150000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.executive,
+        categoryId: allCategories[4].id,
         city: "San Francisco",
         country: "USA",
         status: StatusTypes.active,
@@ -416,6 +550,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[4].id,
         city: "Sunnyvale",
         country: "USA",
         status: StatusTypes.active,
@@ -437,6 +572,7 @@ async function main() {
         experience: ExperienceLevel.senior,
         city: "Bentonville",
         country: "USA",
+        categoryId: allCategories[4].id,
         status: StatusTypes.active,
         requiredSkills: [
           "Operations Management",
@@ -453,6 +589,7 @@ async function main() {
         company: "IBM Research",
         salary: 140000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[5].id,
         experience: ExperienceLevel.executive,
         city: "Yorktown Heights",
         country: "USA",
@@ -469,6 +606,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[5].id,
         city: "Detroit",
         country: "USA",
         status: StatusTypes.active,
@@ -484,6 +622,7 @@ async function main() {
         salary: 100000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[5].id,
         city: "Boston",
         country: "USA",
         status: StatusTypes.active,
@@ -499,6 +638,7 @@ async function main() {
         salary: 105000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[5].id,
         city: "San Francisco",
         country: "USA",
         status: StatusTypes.active,
@@ -518,6 +658,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[5].id,
         city: "Palo Alto",
         country: "USA",
         status: StatusTypes.active,
@@ -533,6 +674,7 @@ async function main() {
         salary: 130000,
         jobType: JobType.REMOTE,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[5].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -547,6 +689,7 @@ async function main() {
         company: "Red Hat",
         salary: 85000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[6].id,
         experience: ExperienceLevel.mid,
         city: "Raleigh",
         country: "USA",
@@ -561,6 +704,7 @@ async function main() {
           "Moz is looking for an SEO Specialist to optimize search engine rankings and boost organic traffic through data-driven strategies.",
         company: "Moz",
         salary: 80000,
+        categoryId: allCategories[6].id,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
         city: "Seattle",
@@ -578,6 +722,7 @@ async function main() {
         salary: 90000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[6].id,
         city: "Cambridge",
         country: "USA",
         status: StatusTypes.active,
@@ -593,6 +738,7 @@ async function main() {
         salary: 85000,
         jobType: JobType.REMOTE,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[6].id,
         city: "Vancouver",
         country: "Canada",
         status: StatusTypes.active,
@@ -608,6 +754,7 @@ async function main() {
         salary: 105000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[6].id,
         city: "Ottawa",
         country: "Canada",
         status: StatusTypes.active,
@@ -626,6 +773,7 @@ async function main() {
         city: "San Francisco",
         country: "USA",
         status: StatusTypes.active,
+        categoryId: allCategories[6].id,
         requiredSkills: ["Customer Service", "CRM", "Relationship Building"],
         deadline: "2025-11-06T00:00:00.000Z",
         userId: jobCreator.id,
@@ -638,6 +786,7 @@ async function main() {
         salary: 90000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[7].id,
         city: "Atlanta",
         country: "USA",
         status: StatusTypes.active,
@@ -653,6 +802,7 @@ async function main() {
         salary: 85000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[7].id,
         city: "Memphis",
         country: "USA",
         status: StatusTypes.active,
@@ -668,6 +818,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[7].id,
         city: "Palo Alto",
         country: "USA",
         status: StatusTypes.active,
@@ -683,6 +834,7 @@ async function main() {
         salary: 120000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[7].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -698,6 +850,7 @@ async function main() {
         salary: 125000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[7].id,
         city: "San Francisco",
         country: "USA",
         status: StatusTypes.active,
@@ -713,6 +866,7 @@ async function main() {
         salary: 160000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.executive,
+        categoryId: allCategories[7].id,
         city: "San Francisco",
         country: "USA",
         status: StatusTypes.active,
@@ -732,6 +886,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[8].id,
         city: "Redwood City",
         country: "USA",
         status: StatusTypes.active,
@@ -747,6 +902,7 @@ async function main() {
         salary: 110000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[8].id,
         city: "Cambridge",
         country: "UK",
         status: StatusTypes.active,
@@ -762,7 +918,7 @@ async function main() {
         salary: 135000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
-        city: "Waltham",
+        categoryId: allCategories[8].id,
         country: "USA",
         status: StatusTypes.active,
         requiredSkills: ["Robotics", "Control Systems", "C++"],
@@ -777,6 +933,7 @@ async function main() {
         salary: 85000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[8].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -792,6 +949,7 @@ async function main() {
         salary: 75000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[8].id,
         city: "Purchase",
         country: "USA",
         status: StatusTypes.active,
@@ -806,6 +964,7 @@ async function main() {
         company: "Coca-Cola",
         salary: 105000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[9].id,
         experience: ExperienceLevel.senior,
         city: "Atlanta",
         country: "USA",
@@ -822,6 +981,7 @@ async function main() {
         salary: 110000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[9].id,
         city: "San Francisco",
         country: "USA",
         status: StatusTypes.active,
@@ -837,6 +997,7 @@ async function main() {
         salary: 100000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[9].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -852,6 +1013,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[9].id,
         city: "Chicago",
         country: "USA",
         status: StatusTypes.active,
@@ -867,6 +1029,7 @@ async function main() {
         salary: 120000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[9].id,
         city: "San Jose",
         country: "USA",
         status: StatusTypes.active,
@@ -881,6 +1044,7 @@ async function main() {
         company: "Amazon",
         salary: 95000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[0].id,
         experience: ExperienceLevel.mid,
         city: "Seattle",
         country: "USA",
@@ -897,6 +1061,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[1].id,
         city: "Palo Alto",
         country: "USA",
         status: StatusTypes.active,
@@ -912,6 +1077,7 @@ async function main() {
         salary: 50000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[2].id,
         city: "Philadelphia",
         country: "USA",
         status: StatusTypes.active,
@@ -929,6 +1095,7 @@ async function main() {
           "Edelman seeks a Public Relations Specialist to manage media campaigns, enhance public image, and coordinate PR activities.",
         company: "Edelman",
         salary: 85000,
+        categoryId: allCategories[3].id,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
         city: "New York",
@@ -946,6 +1113,7 @@ async function main() {
         salary: 70000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[4].id,
         city: "Bethesda",
         country: "USA",
         status: StatusTypes.active,
@@ -961,6 +1129,7 @@ async function main() {
         salary: 110000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[5].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -976,6 +1145,7 @@ async function main() {
         salary: 150000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.executive,
+        categoryId: allCategories[6].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -994,6 +1164,7 @@ async function main() {
         company: "Baker McKenzie",
         salary: 160000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[7].id,
         experience: ExperienceLevel.executive,
         city: "Chicago",
         country: "USA",
@@ -1010,6 +1181,7 @@ async function main() {
         salary: 140000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[8].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -1029,6 +1201,7 @@ async function main() {
         salary: 90000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[9].id,
         city: "Washington, D.C.",
         country: "USA",
         status: StatusTypes.active,
@@ -1048,6 +1221,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[0].id,
         city: "Los Angeles",
         country: "USA",
         status: StatusTypes.active,
@@ -1063,6 +1237,7 @@ async function main() {
         salary: 105000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[1].id,
         city: "Oakland",
         country: "USA",
         status: StatusTypes.active,
@@ -1081,6 +1256,7 @@ async function main() {
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
+        categoryId: allCategories[2].id,
         requiredSkills: ["Clinical Research", "Regulatory", "Data Collection"],
         deadline: "2025-12-05T00:00:00.000Z",
         userId: jobCreator.id,
@@ -1093,6 +1269,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[3].id,
         city: "Woonsocket",
         country: "USA",
         status: StatusTypes.active,
@@ -1112,6 +1289,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[3].id,
         city: "Rochester",
         country: "USA",
         status: StatusTypes.active,
@@ -1126,6 +1304,7 @@ async function main() {
         company: "Cleveland Clinic",
         salary: 105000,
         jobType: JobType.FULLTIME,
+        categoryId: allCategories[4].id,
         experience: ExperienceLevel.mid,
         city: "Cleveland",
         country: "USA",
@@ -1146,6 +1325,7 @@ async function main() {
         salary: 70000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[4].id,
         city: "Secaucus",
         country: "USA",
         status: StatusTypes.active,
@@ -1166,6 +1346,7 @@ async function main() {
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
         city: "South San Francisco",
+        categoryId: allCategories[5].id,
         country: "USA",
         status: StatusTypes.active,
         requiredSkills: ["Biotechnology", "Research", "Data Analysis"],
@@ -1180,6 +1361,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[5].id,
         city: "Minneapolis",
         country: "USA",
         status: StatusTypes.active,
@@ -1199,6 +1381,7 @@ async function main() {
         salary: 75000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[6].id,
         city: "Austin",
         country: "USA",
         status: StatusTypes.active,
@@ -1214,6 +1397,7 @@ async function main() {
         salary: 110000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[7].id,
         city: "Beaverton",
         country: "USA",
         status: StatusTypes.active,
@@ -1233,6 +1417,7 @@ async function main() {
         salary: 105000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[8].id,
         city: "Portland",
         country: "USA",
         status: StatusTypes.active,
@@ -1249,6 +1434,7 @@ async function main() {
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
         city: "San Francisco",
+        categoryId: allCategories[9].id,
         country: "USA",
         status: StatusTypes.active,
         requiredSkills: ["Fashion Design", "Trend Analysis", "Creativity"],
@@ -1263,6 +1449,7 @@ async function main() {
         salary: 85000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[0].id,
         city: "Minneapolis",
         country: "USA",
         status: StatusTypes.active,
@@ -1282,6 +1469,7 @@ async function main() {
         salary: 80000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[1].id,
         city: "Los Angeles",
         country: "USA",
         status: StatusTypes.active,
@@ -1297,6 +1485,7 @@ async function main() {
         salary: 120000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[2].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -1312,6 +1501,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[3].id,
         city: "Los Angeles",
         country: "USA",
         status: StatusTypes.active,
@@ -1327,6 +1517,7 @@ async function main() {
         salary: 90000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[4].id,
         city: "Delft",
         country: "Netherlands",
         status: StatusTypes.active,
@@ -1345,6 +1536,7 @@ async function main() {
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
+        categoryId: allCategories[5].id,
         requiredSkills: [
           "Customer Experience",
           "Service Excellence",
@@ -1361,6 +1553,7 @@ async function main() {
         salary: 140000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.executive,
+        categoryId: allCategories[5].id,
         city: "Menlo Park",
         country: "USA",
         status: StatusTypes.active,
@@ -1376,6 +1569,7 @@ async function main() {
         salary: 110000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[6].id,
         city: "Charlotte",
         country: "USA",
         status: StatusTypes.active,
@@ -1391,6 +1585,7 @@ async function main() {
         salary: 125000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[6].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -1406,6 +1601,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[7].id,
         city: "St. Paul",
         country: "USA",
         status: StatusTypes.active,
@@ -1425,6 +1621,7 @@ async function main() {
         salary: 105000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[8].id,
         city: "Detroit",
         country: "USA",
         status: StatusTypes.active,
@@ -1440,6 +1637,7 @@ async function main() {
         salary: 100000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[9].id,
         city: "Morris",
         country: "USA",
         status: StatusTypes.active,
@@ -1459,6 +1657,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[0].id,
         city: "Wilmington",
         country: "USA",
         status: StatusTypes.active,
@@ -1474,6 +1673,7 @@ async function main() {
         salary: 135000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.executive,
+        categoryId: allCategories[1].id,
         city: "New Brunswick",
         country: "USA",
         status: StatusTypes.active,
@@ -1489,6 +1689,7 @@ async function main() {
         salary: 115000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[2].id,
         city: "Cincinnati",
         country: "USA",
         status: StatusTypes.active,
@@ -1504,6 +1705,7 @@ async function main() {
         salary: 110000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[3].id,
         city: "Bonn",
         country: "Germany",
         status: StatusTypes.active,
@@ -1519,6 +1721,7 @@ async function main() {
         salary: 105000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[4].id,
         city: "Copenhagen",
         country: "Denmark",
         status: StatusTypes.active,
@@ -1538,6 +1741,7 @@ async function main() {
         salary: 140000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.executive,
+        categoryId: allCategories[5].id,
         city: "Washington, D.C.",
         country: "USA",
         status: StatusTypes.active,
@@ -1553,6 +1757,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[5].id,
         city: "Washington, D.C.",
         country: "USA",
         status: StatusTypes.active,
@@ -1568,6 +1773,7 @@ async function main() {
         salary: 85000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[6].id,
         city: "London",
         country: "UK",
         status: StatusTypes.active,
@@ -1587,6 +1793,7 @@ async function main() {
         salary: 90000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.mid,
+        categoryId: allCategories[7].id,
         city: "Fort Lauderdale",
         country: "USA",
         status: StatusTypes.active,
@@ -1602,6 +1809,7 @@ async function main() {
         salary: 75000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[8].id,
         city: "Cambridge",
         country: "USA",
         status: StatusTypes.active,
@@ -1617,6 +1825,7 @@ async function main() {
         salary: 65000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.entry,
+        categoryId: allCategories[9].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -1632,6 +1841,7 @@ async function main() {
         salary: 95000,
         jobType: JobType.FULLTIME,
         experience: ExperienceLevel.senior,
+        categoryId: allCategories[0].id,
         city: "New York",
         country: "USA",
         status: StatusTypes.active,
@@ -1647,6 +1857,187 @@ async function main() {
       });
     }
 
+    const allJobs = await tx.job.findMany({});
+    const normalUser = await tx.user.findUnique({
+      where: {
+        email: "user@gmail.com",
+      },
+    });
+
+    if (!normalUser) {
+      console.log("Normal user not found");
+      return;
+    }
+
+    const applications = [
+      {
+        jobId: allJobs[0].id, // Full Stack Developer
+        applicantId: normalUser.id,
+        coverLetter:
+          "I'm a Full Stack Developer with 4 years of experience in React and Node.js. I'm passionate about clean code and team collaboration.",
+        resume: "https://resumes.jobsphere.com/john-doe.pdf",
+        status: Status.PENDING,
+      },
+      {
+        jobId: allJobs[0].id, // UI/UX Designer
+        applicantId: normalUser?.id,
+        coverLetter:
+          "With 5 years in UX design, I specialize in intuitive interfaces and Figma prototyping. I'd love to help elevate your product design.",
+        resume: "https://resumes.jobsphere.com/jane-smith.pdf",
+        status: Status.SHORTLISTED,
+      },
+      {
+        jobId: allJobs[5].id, // Project Manager
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Experienced PM with a track record of delivering large-scale projects under budget. Strong in Agile and communication.",
+        resume: "https://resumes.jobsphere.com/alex-tan.pdf",
+        status: Status.ACCEPTED,
+      },
+      {
+        jobId: allJobs[5].id, // Digital Marketer
+        applicantId: normalUser?.id,
+        coverLetter:
+          "I've led campaigns that increased traffic by 120%. My SEO and SEM skills would be an asset to your marketing team.",
+        resume: "https://resumes.jobsphere.com/lisa-kim.pdf",
+        status: Status.PENDING,
+      },
+      {
+        jobId: allJobs[10].id, // Data Analyst
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Proficient in SQL, Python, and Power BI. I uncover data stories that drive decision-making and revenue growth.",
+        resume: "https://resumes.jobsphere.com/rahul-singh.pdf",
+        status: Status.REJECTED,
+      },
+      {
+        jobId: allJobs[10].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "React, TypeScript, GraphQL — I’ve built scalable apps with all. I bring precision, speed, and collaboration to every team.",
+        resume: "https://resumes.jobsphere.com/maria-gomez.pdf",
+        status: Status.PENDING,
+      },
+      {
+        jobId: allJobs[2].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "User empathy and minimalist design are my strengths. Let’s create experiences that convert and retain users.",
+        resume: "https://resumes.jobsphere.com/emeka-obi.pdf",
+        status: Status.REJECTED,
+      },
+      {
+        jobId: allJobs[2].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Certified Scrum Master with 6 years in SaaS. I excel at leading distributed teams and ensuring timely delivery.",
+        resume: "https://resumes.jobsphere.com/hannah-lee.pdf",
+        status: Status.ACCEPTED,
+      },
+      {
+        jobId: allJobs[16].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Growth hacking and email marketing are my thing. I've built lead funnels that boosted MRR by 40%.",
+        resume: "https://resumes.jobsphere.com/thomas-brown.pdf",
+        status: Status.SHORTLISTED,
+      },
+      {
+        jobId: allJobs[16].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Python, Pandas, Tableau — I deliver insights that speak business. Excited about data culture at your company.",
+        resume: "https://resumes.jobsphere.com/susan-wang.pdf",
+        status: Status.PENDING,
+      },
+      {
+        jobId: allJobs[20].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "I've developed enterprise apps with microservices and CI/CD. Strong in Docker, Next.js, and performance optimization.",
+        resume: "https://resumes.jobsphere.com/kevin-okafor.pdf",
+        status: Status.SHORTLISTED,
+      },
+      {
+        jobId: allJobs[25].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "From user research to prototyping, I bring the full UX cycle. Portfolio includes fintech and healthtech apps.",
+        resume: "https://resumes.jobsphere.com/claire-nguyen.pdf",
+        status: Status.PENDING,
+      },
+      {
+        jobId: allJobs[27].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Strong in stakeholder management and KPI reporting. I’ve led cross-functional teams across 3 continents.",
+        resume: "https://resumes.jobsphere.com/daniel-mehta.pdf",
+        status: Status.REJECTED,
+      },
+      {
+        jobId: allJobs[25].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "I've scaled TikTok and Instagram accounts to 100k+. Creative strategy and content repurposing are my strengths.",
+        resume: "https://resumes.jobsphere.com/natasha-mwamba.pdf",
+        status: Status.ACCEPTED,
+      },
+      {
+        jobId: allJobs[4].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "ETL pipelines, dashboarding, anomaly detection — I’ve done it all. I'm excited to join a data-forward company.",
+        resume: "https://resumes.jobsphere.com/eric-lee.pdf",
+        status: Status.PENDING,
+      },
+      {
+        jobId: allJobs[4].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "I’ve worked on remote teams building Jamstack apps. I’m fast, reliable, and thrive in modern frontend ecosystems.",
+        resume: "https://resumes.jobsphere.com/sophie-nalubega.pdf",
+        status: Status.ACCEPTED,
+      },
+      {
+        jobId: allJobs[1].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "I turn complexity into clarity. My mobile-first designs have improved onboarding and reduced churn.",
+        resume: "https://resumes.jobsphere.com/robert-chan.pdf",
+        status: Status.SHORTLISTED,
+      },
+      {
+        jobId: allJobs[1].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Strategic thinker with a technical background. I'm a PM who can talk to devs and business alike.",
+        resume: "https://resumes.jobsphere.com/angela-owens.pdf",
+        status: Status.PENDING,
+      },
+      {
+        jobId: allJobs[8].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "I build brands that resonate. I've led global brand campaigns in 3 industries.",
+        resume: "https://resumes.jobsphere.com/moses-adewale.pdf",
+        status: Status.REJECTED,
+      },
+      {
+        jobId: allJobs[8].id,
+        applicantId: normalUser?.id,
+        coverLetter:
+          "Let’s turn raw data into gold. I specialize in A/B testing and product analytics.",
+        resume: "https://resumes.jobsphere.com/sandra-white.pdf",
+        status: Status.SHORTLISTED,
+      },
+    ];
+
+    for (const application of applications) {
+      await tx.application.create({
+        data: application,
+      });
+    }
+    console.log("application created");
     console.log("Seeding completed.");
   });
 }

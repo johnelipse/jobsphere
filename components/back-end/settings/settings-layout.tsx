@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Bell,
@@ -7,21 +7,22 @@ import {
   Home,
   Palette,
   Shield,
-  User,
-} from 'lucide-react';
-import { useState } from 'react';
+  User2,
+} from "lucide-react";
+import { useState } from "react";
 
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AddressSettings } from './address-settings';
-import { BankingSettings } from './banking-settings';
-import { EmploymentSettings } from './employment-settings';
-import { NotificationSettings } from './notification-settings';
-import { ProfileForm } from './profile-form';
-import { SecuritySettings } from './security-settings';
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AddressSettings } from "./address-settings";
+import { BankingSettings } from "./banking-settings";
+import { EmploymentSettings } from "./employment-settings";
+import { NotificationSettings } from "./notification-settings";
+import { ProfileForm } from "./profile-form";
+import { SecuritySettings } from "./security-settings";
+import { User } from "@prisma/client";
 
-export default function SettingsLayout({ user }: { user: any }) {
-  const [activeTab, setActiveTab] = useState('profile');
+export default function SettingsLayout({ user }: { user: User | null }) {
+  const [activeTab, setActiveTab] = useState("profile");
 
   return (
     <div className="container py-10">
@@ -74,33 +75,33 @@ export default function SettingsLayout({ user }: { user: any }) {
             Profile
           </div>
           <button
-            onClick={() => setActiveTab('profile')}
+            onClick={() => setActiveTab("profile")}
             className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === 'profile'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
+              activeTab === "profile"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
             }`}
           >
-            <User size={16} />
+            <User2 size={16} />
             <span>Personal Info</span>
           </button>
           <button
-            onClick={() => setActiveTab('address')}
+            onClick={() => setActiveTab("address")}
             className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === 'address'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
+              activeTab === "address"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
             }`}
           >
             <Home size={16} />
             <span>Address</span>
           </button>
           <button
-            onClick={() => setActiveTab('employment')}
+            onClick={() => setActiveTab("employment")}
             className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === 'employment'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
+              activeTab === "employment"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
             }`}
           >
             <Briefcase size={16} />
@@ -111,22 +112,22 @@ export default function SettingsLayout({ user }: { user: any }) {
             Account
           </div>
           <button
-            onClick={() => setActiveTab('security')}
+            onClick={() => setActiveTab("security")}
             className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === 'security'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
+              activeTab === "security"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
             }`}
           >
             <Shield size={16} />
             <span>Security</span>
           </button>
           <button
-            onClick={() => setActiveTab('banking')}
+            onClick={() => setActiveTab("banking")}
             className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === 'banking'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
+              activeTab === "banking"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
             }`}
           >
             <CreditCard size={16} />
@@ -137,22 +138,22 @@ export default function SettingsLayout({ user }: { user: any }) {
             Preferences
           </div>
           <button
-            onClick={() => setActiveTab('notifications')}
+            onClick={() => setActiveTab("notifications")}
             className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === 'notifications'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
+              activeTab === "notifications"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
             }`}
           >
             <Bell size={16} />
             <span>Notifications</span>
           </button>
           <button
-            onClick={() => setActiveTab('appearance')}
+            onClick={() => setActiveTab("appearance")}
             className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === 'appearance'
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-muted'
+              activeTab === "appearance"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
             }`}
           >
             <Palette size={16} />
@@ -162,7 +163,7 @@ export default function SettingsLayout({ user }: { user: any }) {
 
         <div className="flex-1">
           <div className="hidden md:block">
-            {activeTab === 'profile' && (
+            {activeTab === "profile" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Personal Information</h2>
                 <p className="text-muted-foreground">
@@ -173,17 +174,17 @@ export default function SettingsLayout({ user }: { user: any }) {
               </div>
             )}
 
-            {activeTab === 'address' && (
+            {activeTab === "address" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Address Information</h2>
                 <p className="text-muted-foreground">
                   Update your address and contact information.
                 </p>
-                <AddressSettings />
+                <AddressSettings user={user} />
               </div>
             )}
 
-            {activeTab === 'employment' && (
+            {activeTab === "employment" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Employment Details</h2>
                 <p className="text-muted-foreground">
@@ -193,7 +194,7 @@ export default function SettingsLayout({ user }: { user: any }) {
               </div>
             )}
 
-            {activeTab === 'security' && (
+            {activeTab === "security" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Security Settings</h2>
                 <p className="text-muted-foreground">
@@ -203,7 +204,7 @@ export default function SettingsLayout({ user }: { user: any }) {
               </div>
             )}
 
-            {activeTab === 'banking' && (
+            {activeTab === "banking" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Banking Information</h2>
                 <p className="text-muted-foreground">
@@ -213,7 +214,7 @@ export default function SettingsLayout({ user }: { user: any }) {
               </div>
             )}
 
-            {activeTab === 'notifications' && (
+            {activeTab === "notifications" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Notification Preferences</h2>
                 <p className="text-muted-foreground">
@@ -224,7 +225,7 @@ export default function SettingsLayout({ user }: { user: any }) {
               </div>
             )}
 
-            {activeTab === 'appearance' && (
+            {activeTab === "appearance" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Appearance</h2>
                 <p className="text-muted-foreground">

@@ -340,3 +340,17 @@ export async function changePassword(data: {
     };
   }
 }
+
+export async function getAllUsers() {
+  try {
+    const users = await db.user.findMany({
+      include: {
+        applications: true,
+      },
+    });
+    return users;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}

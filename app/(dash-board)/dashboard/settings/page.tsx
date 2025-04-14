@@ -7,7 +7,7 @@ export default async function page() {
   const user = await getCurrentUser();
 
   return (
-    <div>
+    <div className='w-full'>
       <SettingsLayout user={user} />
     </div>
   );

@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 // import { updateAddress } from '@/actions/users';
-import { Button } from '@/components/ui/button';
-import { toast } from '@mosespace/toast';
-import CustomText from '../re-usable-inputs/text-reusable';
+import { Button } from "@/components/ui/button";
+import { toast } from "@mosespace/toast";
+import CustomText from "../re-usable-inputs/text-reusable";
+import { User } from "@prisma/client";
 
 const formSchema = z.object({
   streetAddress: z.string().optional(),
@@ -17,7 +18,7 @@ const formSchema = z.object({
   postCode: z.string().optional(),
 });
 
-export function AddressSettings(user: any) {
+export function AddressSettings({ user }: { user?: User | null }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -28,12 +29,9 @@ export function AddressSettings(user: any) {
   } = useForm<z.infer<typeof formSchema>>({
     // resolver: zodResolver(formSchema),
     defaultValues: {
-      ...user,
-      // streetAddress: user?.streetAddress || '',
-      // city: user?.city || '',
-      // state: user?.state || '',
-      // country: user?.country || '',
-      // postCode: user?.postCode || '',
+      city: user?.city || "",
+      state: user?.state || "",
+      country: user?.country || "",
     },
   });
 
@@ -70,16 +68,6 @@ export function AddressSettings(user: any) {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <CustomText
-            label="Street Address"
-            register={register}
-            name="streetAddress"
-            errors={errors}
-            type="text"
-            placeholder="123 Main St"
-            disabled={isLoading}
-            className="w-full"
-          />
-          <CustomText
             label="City"
             register={register}
             name="city"
@@ -111,21 +99,10 @@ export function AddressSettings(user: any) {
             disabled={isLoading}
             className="w-full"
           />
-
-          <CustomText
-            label="Postal / ZIP Code"
-            register={register}
-            name="postCode"
-            errors={errors}
-            type="text"
-            placeholder="California"
-            disabled={isLoading}
-            className="w-full"
-          />
         </div>
 
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : 'Save Address'}
+          {isLoading ? "Saving..." : "Save Address"}
         </Button>
       </form>
     </div>

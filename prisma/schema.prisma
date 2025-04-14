@@ -21,7 +21,19 @@ model User {
   name                 String
   email                String        @unique
   emailVerified        DateTime?
+   headline            String? 
+  summary              String?
+  skills               String[]
+  city                 String?
+    state              String?
+    country            String?
   token                String?
+  resume               String?
+
+  linkedin             String?
+    github             String?
+    website            String?
+  
   image                String?       @default("https://hrty.vercel.app/zO2iET")
   isMachine            Boolean       @default(false)
   passwordHash         String?
@@ -37,6 +49,7 @@ model User {
   sessions             Session[]
   activityLogs         ActivityLog[] @relation("UserActivityLog")
   jobs                 Job[]
+  applications         Application[]
 }
 
 model ActivityLog {
@@ -124,6 +137,16 @@ enum StatusTypes {
   expired
 }
 
+model Category {
+   id                      String           @id @default(cuid())
+  title                    String
+  slug                     String    @unique 
+ createdAt                 DateTime @default(now())
+ updatedAt                 DateTime @updatedAt()
+ jobs                      Job[]
+}
+
+
 model Job {
   id             String           @id @default(cuid())
   title          String
@@ -143,4 +166,33 @@ model Job {
   updatedAt DateTime @updatedAt()
   User      User?    @relation(fields: [userId], references: [id])
   userId    String?
+  
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  
+  applications Application[]
+}
+
+
+model Application {
+  id          String   @id @default(cuid())
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId       String
+
+  applicant   User     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  applicantId String
+
+  coverLetter String?
+  resume      String?  // URL or file path to the uploaded resume
+  status      Status   @default(PENDING)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Status {
+  PENDING
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
 }
