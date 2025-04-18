@@ -1,9 +1,11 @@
 import {
+  createApplication,
   deleteApplication,
   getAllApplications,
   getSingleApplication,
   updateApplication,
 } from "@/actions/applications";
+import { ApplicationProps } from "@/components/front-end/jobs/application-dialog";
 
 export const applicationservice = {
   getApplications: async () => {
@@ -37,5 +39,13 @@ export const applicationservice = {
     }
 
     return applicationUpdated;
+  },
+  create: async (data: ApplicationProps) => {
+    const application = await createApplication(data);
+    if (!application) {
+      throw new Error("Failed to delete application");
+    }
+
+    return application;
   },
 };

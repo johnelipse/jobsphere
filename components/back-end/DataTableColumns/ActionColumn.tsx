@@ -2,16 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -20,26 +11,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import Link from "next/link";
 import { useJobs } from "@/hooks/useJobsHook";
 import { useRouter } from "next/navigation";
-// import { toast } from "@mosespace/toast";
+import { useCategories } from "@/hooks/useCategories";
 
 type ActionColumnProps = {
   row: any;
   model: any;
   editEndpoint: string;
-  id: string | undefined;
+  id?: string | undefined;
+  slug?: string | undefined;
 };
 export default function ActionColumn({
   row,
   model,
   editEndpoint,
   id = "",
+  slug = "",
 }: ActionColumnProps) {
   const isActive = row.isActive;
   const { deletedJob, isDeleting } = useJobs();
+  const { deletedCategory } = useCategories();
   const router = useRouter();
   async function handleDelete() {
     try {
@@ -48,6 +42,9 @@ export default function ActionColumn({
         router.refresh();
         // window.location.reload();
         // toast.success("success", `${model} Deleted Successfully`);
+      } else if (model === "category") {
+        deletedCategory(slug);
+        router.refresh();
       }
     } catch (error) {
       console.log(error);

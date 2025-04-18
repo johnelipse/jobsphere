@@ -205,17 +205,7 @@ export async function createUser({
 }
 
 // Update user profile
-export async function updateProfile(data: {
-  name: string;
-  personalEmail?: string;
-  phoneNumber?: string;
-  gender?: string;
-  maritalStatus?: string;
-  dateOfBirth?: Date;
-  bloodGroup?: string;
-  nationality?: string;
-  notes?: string;
-}) {
+export async function updateProfile(data: any) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -352,5 +342,19 @@ export async function getAllUsers() {
   } catch (error) {
     console.log(error);
     return [];
+  }
+}
+
+export async function getSingleUser(id: string) {
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.log(error);
+    return null;
   }
 }

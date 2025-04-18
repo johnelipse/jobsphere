@@ -5,6 +5,7 @@ import { useJob } from "@/hooks/useJobsHook";
 import JobDetailsSkeleton from "./job-details-skeloton";
 import { calculateJobDeadline } from "@/lib/getDeadline";
 import { getTimeAgo } from "@/lib/getTimeAgo";
+import { JobApplicationDialog } from "./application-dialog";
 
 export default function JobDetailsPage({ paramId }: { paramId: string }) {
   const { job, isLoading } = useJob(paramId);
@@ -119,7 +120,11 @@ export default function JobDetailsPage({ paramId }: { paramId: string }) {
             {/* Right Column - Client Info */}
             <div className="space-y-6">
               <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <Button className="w-full">Apply For the job</Button>
+                {/* <Button className="w-full">Apply For the job</Button> */}
+                <JobApplicationDialog
+                  jobId={paramId}
+                  jobTitle={job?.title ?? ""}
+                />
 
                 <button className="w-full border border-gray-300 hover:bg-gray-50 py-2 rounded-md font-medium mt-3 flex items-center justify-center">
                   <Heart className="h-4 w-4 mr-2" />

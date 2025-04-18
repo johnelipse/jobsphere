@@ -9,10 +9,7 @@ import {
   MessageCircle,
   Search,
   Sparkles,
-  User,
 } from "lucide-react";
-import { NavUser } from "../back-end/nav-user";
-import { Session } from "next-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,13 +19,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { SidebarMenuButton } from "../ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { signOut } from "next-auth/react";
 import { Button } from "../ui/button";
+import { User } from "@prisma/client";
 
-export function Header({ session }: { session: Session | null }) {
-  const user = session?.user;
+export function Header({ user }: { user: User | null }) {
   return (
     <header className="bg-white border-b sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
@@ -118,7 +114,7 @@ export function Header({ session }: { session: Session | null }) {
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Sparkles />
-                  Upgrade to Pro
+                  <Link href="/update">Profile Settings</Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

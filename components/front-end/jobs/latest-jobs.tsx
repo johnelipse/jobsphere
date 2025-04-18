@@ -13,17 +13,13 @@ interface JobSectionProps {
   showSaveButton?: boolean;
 }
 
-export function JobSection({
+export function LatestJobSection({
   title,
   showProfileCard = false,
   showSaveButton = false,
 }: JobSectionProps) {
   const { jobs } = useJobs();
   const router = useRouter();
-
-  function handleRedirect() {
-    router.push("/update");
-  }
 
   const jobsWithDeadlines = jobs.map((job) => {
     // Skip calculation if deadline is not set
@@ -72,25 +68,6 @@ export function JobSection({
             showSaveButton={showSaveButton}
           />
         ))}
-
-        {showProfileCard && (
-          <Card className="p-4 bg-amber-50 border-amber-200">
-            <div className="text-sm font-medium mb-2">
-              Want better recommendations?
-            </div>
-            <div className="text-sm font-medium mb-3">Build Your Profile!</div>
-            <p className="text-xs text-gray-600 mb-4">
-              You can also set your profile visible to employers and get
-              headhunted!
-            </p>
-            <Button
-              onClick={() => handleRedirect()}
-              className="w-full bg-amber-400 hover:bg-amber-500 text-black text-xs h-8"
-            >
-              Build profile <ChevronRight className="h-3 w-3 ml-1" />
-            </Button>
-          </Card>
-        )}
       </div>
     </div>
   );

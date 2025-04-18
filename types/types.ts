@@ -15,6 +15,11 @@ export interface LeaveRequest {
   updatedAt: string | Date;
 }
 
+export interface CreateCTO {
+  slug: string;
+  title: string;
+}
+
 export interface LeaveFormData {
   leaveType: string;
   startDate: Date;
@@ -61,5 +66,32 @@ export type SingleApplicationQueryResponse = {
 export type MutationApplicationResponse = {
   success: boolean;
   data?: Application | null;
+  error?: string;
+};
+
+export type CategoryProps = {
+  id: string;
+  title: string;
+  slug: string;
+  createdAt: Date;
+  updatedAt: Date;
+  jobs?: Job[];
+};
+
+export type CategoryQueriesResponse = {
+  data: CategoryProps[];
+  error?: string;
+};
+
+// For single contact queries
+export type SingleCategoryQueryResponse = {
+  data: CategoryProps | null;
+  error?: string;
+};
+
+// For mutation operations
+export type MutationCategoryResponse = {
+  success: boolean;
+  data?: CategoryProps | null;
   error?: string;
 };

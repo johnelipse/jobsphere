@@ -1,5 +1,8 @@
 import { db } from "@/lib/db";
-import { ApplicationQueriesResponse } from "@/types/types";
+import {
+  ApplicationQueriesResponse,
+  MutationApplicationResponse,
+} from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -83,6 +86,35 @@ export async function GET(
           totalPages: 0,
         },
         message: "Failed to fetch applications",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  req: NextRequest
+): Promise<NextResponse<MutationApplicationResponse>> {
+  const data = await req.json();
+  try {
+    const newApplication = await db.application.create({
+      data,
+    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: newApplication,
+        message: "Application created successfully.",
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        success: false,
+        data: null,
+        error: "Failed to create application",
       },
       { status: 500 }
     );

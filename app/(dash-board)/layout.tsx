@@ -1,17 +1,17 @@
-import { AppSidebar } from '@/components/back-end/app-sidebar';
+import { AppSidebar } from "@/components/back-end/app-sidebar";
 
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar';
-import React from 'react';
-import Breadcrumb from '../../components/back-end/breadcrumb';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import { SendFeedback } from '@/components/send-feedback';
+} from "@/components/ui/sidebar";
+import React from "react";
+import Breadcrumb from "../../components/back-end/breadcrumb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { SendFeedback } from "@/components/send-feedback";
 
 export default async function BackEndLayout({
   children,
@@ -19,10 +19,12 @@ export default async function BackEndLayout({
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect(`/login?callback=${encodeURIComponent('/dashboard')}`);
+    redirect(`/login?callback=${encodeURIComponent("/dashboard")}`);
   }
 
-  // console.log(`Session User:`, session);
+  if (session?.user.role === "USER") {
+    redirect("/jobs");
+  }
 
   return (
     <SidebarProvider>

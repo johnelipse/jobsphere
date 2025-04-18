@@ -1,34 +1,54 @@
 "use server";
 
-import { ApplicationProps } from "@/components/front-end/jobs/application-dialog";
 import { api } from "@/config/axios";
-import { Application } from "@prisma/client";
+import { CategoryProps, CreateCTO } from "@/types/types";
 import { revalidatePath } from "next/cache";
 
-export async function getAllApplications() {
+export async function getAllCategories() {
   try {
-    const res = await api.get(`/applications`);
-    const applications = res.data.data;
-    return applications as Application[];
+    const res = await api.get(`/categories`);
+    const categories = res.data.data;
+    return categories as CategoryProps[];
   } catch (error) {
     console.log(error);
     return [];
   }
 }
-export async function getSingleApplication(id: string) {
+
+export async function getSingleCategory(slug: string) {
   try {
-    const res = await api.get(`/applications/${id}`);
-    const job = res.data.data;
-    return job as Application;
+    const res = await api.get(`/categories/${slug}`);
+    const category = res.data.data;
+    return category as CategoryProps;
   } catch (error) {
     console.log(error);
     return null;
   }
 }
 
-export async function updateApplication(data: any, id: string) {
+export async function deleteCategory(slug: string) {
   try {
-    await api.patch(`/applications/${id}`, data, {
+    await api.delete(`/categories/${slug}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    revalidatePath("/dashboard/categories");
+
+    return {
+      ok: true,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      ok: false,
+    };
+  }
+}
+
+export async function updateCategory(data: any, slug: string) {
+  try {
+    await api.patch(`/categories/${slug}`, data, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -45,35 +65,19 @@ export async function updateApplication(data: any, id: string) {
   }
 }
 
-export async function deleteApplication(id: string) {
+export async function createCategory(data: CreateCTO) {
   try {
-    await api.delete(`/applications/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    revalidatePath("/jobs");
-    return {
-      ok: true,
-    };
-  } catch (error) {
-    console.log(error);
-    return {
-      ok: false,
-    };
-  }
-}
-
-export async function createApplication(data: ApplicationProps) {
-  try {
-    const res = await api.post(`/applications`, data, {
+    const res = await api.post(`/categories`, data, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
+    revalidatePath("/categories");
     revalidatePath("/jobs");
-    revalidatePath("/dashboard/applications");
+    revalidatePath("/");
+
+    revalidatePath("/dashboard/categories");
     return {
       ok: true,
     };

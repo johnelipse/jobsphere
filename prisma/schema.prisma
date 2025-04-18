@@ -167,7 +167,7 @@ model Job {
   User      User?    @relation(fields: [userId], references: [id])
   userId    String?
   
-  category    Category? @relation(fields: [categoryId], references: [id])
+  category    Category? @relation(fields: [categoryId], references: [id],onDelete: Cascade)
   categoryId  String?
   
   applications Application[]

@@ -1,10 +1,30 @@
+import { ApplicationProps } from "@/components/front-end/jobs/application-dialog";
 import { applicationservice } from "@/services/application";
 import { toast } from "@mosespace/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useApplications() {
   const queryClient = useQueryClient();
-
+  const createApplicationQuery = useMutation({
+    mutationFn: (data: ApplicationProps) => applicationservice.create(data),
+    onSuccess: () => {
+      toast.success("Success", "Application submitted successfully.");
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
+    onError: (error: Error) => {
+      if (error.message === "You have already applied.") {
+        toast.error("error", "You have already applied.");
+      } else {
+        console.log(error);
+        toast.error(
+          "error",
+          `Failed to create Application: ${
+            error.message || "Unknown error occurred"
+          }`
+        );
+      }
+    },
+  });
   // Query for fetching all contacts
   const applicationsQuery = useQuery({
     queryKey: ["applications"],
@@ -57,8 +77,11 @@ export function useApplications() {
     //mutations
     applicationUpdated: updateApplicationQuery.mutate,
     deletedApplication: deleteApplicationQuery.mutate,
+    applicationCreated: createApplicationQuery.mutate,
     isDeleting: deleteApplicationQuery.isPending,
     isUpdating: updateApplicationQuery.isPending,
+    isCreating: createApplicationQuery.isPending,
+    isCreated: createApplicationQuery.isSuccess,
   };
 }
 export function useApplication(id: string) {
