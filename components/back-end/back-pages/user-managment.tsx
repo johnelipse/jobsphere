@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Check,
-  Download,
-  MoreHorizontal,
-  Search,
-  Shield,
-  User,
-  X,
-} from "lucide-react";
+import { Download, MoreHorizontal, Search, Shield, User2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -36,116 +28,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { User } from "@prisma/client";
+import { getTimeAgo } from "@/lib/getTimeAgo";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { deleteUser } from "@/actions/users";
+import { toast } from "@mosespace/toast";
+import { useRouter } from "next/navigation";
 
-const users = [
-  {
-    id: 1,
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    role: "job-seeker",
-    status: "active",
-    verified: true,
-    joined: "Jan 15, 2023",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "AJ",
-  },
-  {
-    id: 2,
-    name: "Sarah Williams",
-    email: "sarah.w@example.com",
-    role: "employer",
-    status: "active",
-    verified: true,
-    joined: "Feb 3, 2023",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "SW",
-  },
-  {
-    id: 3,
-    name: "Michael Brown",
-    email: "m.brown@example.com",
-    role: "job-seeker",
-    status: "suspended",
-    verified: false,
-    joined: "Mar 22, 2023",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "MB",
-  },
-  {
-    id: 4,
-    name: "Emily Davis",
-    email: "emily.d@example.com",
-    role: "employer",
-    status: "active",
-    verified: true,
-    joined: "Apr 10, 2023",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "ED",
-  },
-  {
-    id: 5,
-    name: "David Wilson",
-    email: "david.w@example.com",
-    role: "job-seeker",
-    status: "inactive",
-    verified: true,
-    joined: "May 5, 2023",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "DW",
-  },
-];
+export function UserManagement({ allUsers }: { allUsers: User[] }) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-export function UserManagement() {
+  const router = useRouter();
+
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+
+  const [loading, setLoading] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = allUsers.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
-    const matchesStatus =
-      statusFilter === "all" || user.status === statusFilter;
 
-    return matchesSearch && matchesRole && matchesStatus;
+    return matchesSearch && matchesRole;
   });
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return (
-          <Badge variant="outline" className="border-green-500 text-green-500">
-            <Check className="mr-1 h-3 w-3" /> Active
-          </Badge>
-        );
-      case "suspended":
-        return (
-          <Badge variant="outline" className="border-red-500 text-red-500">
-            <X className="mr-1 h-3 w-3" /> Suspended
-          </Badge>
-        );
-      case "inactive":
-        return (
-          <Badge variant="outline" className="border-gray-500 text-gray-500">
-            Inactive
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
-      case "job-seeker":
+      case "USER":
         return (
           <Badge variant="outline" className="border-blue-500 text-blue-500">
-            <User className="mr-1 h-3 w-3" /> Job Seeker
+            <User2 className="mr-1 h-3 w-3" /> Job Seeker
           </Badge>
         );
-      case "employer":
+      case "EMPLOYER":
         return (
           <Badge
             variant="outline"
@@ -158,6 +88,26 @@ export function UserManagement() {
         return <Badge variant="outline">{role}</Badge>;
     }
   };
+
+  const handleDeleteClick = (user: User) => {
+    setUserToDelete(user);
+    setDeleteDialogOpen(true);
+  };
+
+  async function handleConfirmDelete(userId: string) {
+    try {
+      setLoading(true);
+      await deleteUser(userId);
+      toast.success("Success", "User deleted successfully.");
+      setLoading(false);
+      router.refresh();
+      setDeleteDialogOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error", "Something went wrong.");
+      setLoading(false);
+    }
+  }
 
   return (
     <section className="space-y-4">
@@ -199,27 +149,15 @@ export function UserManagement() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex w-full md:w-auto">
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full md:w-[180px]">
                     <SelectValue placeholder="Filter by role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="job-seeker">Job Seeker</SelectItem>
-                    <SelectItem value="employer">Employer</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="USER">Job Seeker</SelectItem>
+                    <SelectItem value="EMPLOYER">Employer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -227,11 +165,12 @@ export function UserManagement() {
 
             <div className="rounded-md border">
               <div className="grid grid-cols-12 gap-4 border-b bg-muted/50 p-4 text-sm font-medium">
-                <div className="col-span-4">User</div>
-                <div className="col-span-2">Role</div>
-                <div className="col-span-2">Status</div>
-                <div className="col-span-2">Verified</div>
-                <div className="col-span-2">Actions</div>
+                <div className="col-span-5 sm:col-span-6">User</div>
+                <div className="col-span-3 hidden sm:block">Role</div>
+                <div className="col-span-4 sm:col-span-2">Joined</div>
+                <div className="col-span-3 sm:col-span-1 text-right">
+                  Actions
+                </div>
               </div>
 
               {filteredUsers.length > 0 ? (
@@ -240,43 +179,29 @@ export function UserManagement() {
                     key={user.id}
                     className="grid grid-cols-12 items-center gap-4 border-b p-4 last:border-0"
                   >
-                    <div className="col-span-4 flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>{user.initials}</AvatarFallback>
+                    <div className="col-span-5 sm:col-span-6 flex items-center gap-3">
+                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                        <AvatarImage src={user.image ?? ""} alt={user.name} />
+                        <AvatarFallback>
+                          {user.name?.charAt(0) || "U"}
+                        </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">
+                      <div className="min-w-0 overflow-hidden">
+                        <p className="font-medium truncate">{user.name}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
                           {user.email}
                         </p>
                       </div>
                     </div>
-                    <div className="col-span-2">{getRoleBadge(user.role)}</div>
-                    <div className="col-span-2">
-                      {getStatusBadge(user.status)}
+                    <div className="col-span-3 hidden sm:block">
+                      {getRoleBadge(user.role)}
                     </div>
-                    <div className="col-span-2">
-                      {user.verified ? (
-                        <Badge
-                          variant="outline"
-                          className="border-green-500 text-green-500"
-                        >
-                          <Check className="mr-1 h-3 w-3" /> Verified
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="border-amber-500 text-amber-500"
-                        >
-                          Pending
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="col-span-2 flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">
-                        Joined {user.joined}
+                    <div className="col-span-4 sm:col-span-2">
+                      <span className="text-xs sm:text-sm text-muted-foreground">
+                        {getTimeAgo(user.createdAt)}
                       </span>
+                    </div>
+                    <div className="col-span-3 sm:col-span-1 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -289,21 +214,14 @@ export function UserManagement() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>View Profile</DropdownMenuItem>
-                          <DropdownMenuItem>Edit User</DropdownMenuItem>
-                          {user.status === "active" ? (
-                            <DropdownMenuItem className="text-amber-600">
-                              Suspend User
-                            </DropdownMenuItem>
-                          ) : user.status === "suspended" ? (
-                            <DropdownMenuItem className="text-green-600">
-                              Reactivate User
-                            </DropdownMenuItem>
-                          ) : null}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteClick(user);
+                            }}
+                          >
                             Delete User
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -320,6 +238,33 @@ export function UserManagement() {
           </div>
         </CardContent>
       </Card>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to delete this user?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              user
+              {userToDelete && (
+                <span className="font-medium"> {userToDelete.name}</span>
+              )}{" "}
+              and remove their data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={loading}
+              onClick={() => handleConfirmDelete(userToDelete?.id ?? "")}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {loading ? "Deleting.." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

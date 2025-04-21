@@ -1,7 +1,9 @@
 "use server";
 
 import { api } from "@/config/axios";
+import { JobCreateCTO } from "@/types/types";
 import { Job } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function getAllJobs() {
   try {
@@ -51,6 +53,30 @@ export async function deleteJob(id: string) {
       },
     });
 
+    return {
+      ok: true,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      ok: false,
+    };
+  }
+}
+
+export async function createJob(data: JobCreateCTO) {
+  try {
+    const res = await api.post(`/jobs`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    revalidatePath("/categories");
+    revalidatePath("/jobs");
+    revalidatePath("/");
+
+    revalidatePath("/dashboard/jobs");
     return {
       ok: true,
     };

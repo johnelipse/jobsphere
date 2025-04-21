@@ -15,6 +15,10 @@ export async function GET(
       where: {
         id,
       },
+      include: {
+        applicant: true,
+        job: true,
+      },
     });
 
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { JobQueriesResponse } from "@/types/types";
+import { JobQueriesResponse, MutationJobResponse } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -89,6 +89,35 @@ export async function GET(
           totalPages: 0,
         },
         message: "Failed to fetch jobs",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  req: NextRequest
+): Promise<NextResponse<MutationJobResponse>> {
+  const data = await req.json();
+  try {
+    const newJob = await db.job.create({
+      data,
+    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: newJob,
+        message: "Job created successfully.",
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        success: false,
+        data: null,
+        error: "Failed to create job",
       },
       { status: 500 }
     );

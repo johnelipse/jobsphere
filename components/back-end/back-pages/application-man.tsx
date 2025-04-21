@@ -67,15 +67,15 @@ export function ApplicationManagement({ users }: { users: User[] }) {
     return job ? job.title : "Unknown Position";
   };
 
-  let userData = null;
+  // let userData = null;
 
-  if (applications?.length && users?.length) {
-    const applicantId = applications[0]?.applicantId;
-    userData = users.find((user) => user.id === applicantId);
-  }
+  // if (applications?.length && users?.length) {
+  //   const applicantId = applications[0]?.applicantId;
+  //   userData = users.find((user) => user.id === applicantId);
+  // }
 
-  console.log(userData);
-  // Get job type label
+  // console.log(userData);
+  // // Get job type label
   const getJobTypeLabel = (type: JobType) => {
     switch (type) {
       case "REMOTE":
@@ -345,19 +345,23 @@ export function ApplicationManagement({ users }: { users: User[] }) {
                               <Avatar className="h-10 w-10">
                                 <AvatarImage
                                   src={
-                                    userData?.image ||
+                                    application.applicant?.image ||
                                     "/placeholder.svg?height=40&width=40"
                                   }
-                                  alt={userData?.name}
+                                  alt={application.applicant?.name}
                                 />
                                 <AvatarFallback>
-                                  {getInitials(userData?.name as string)}
+                                  {getInitials(
+                                    application.applicant?.name as string
+                                  )}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium">{userData?.name}</p>
+                                <p className="font-medium">
+                                  {application.applicant?.name}
+                                </p>
                                 <p className="text-sm text-muted-foreground">
-                                  {userData?.email}
+                                  {application.applicant?.email}
                                 </p>
                               </div>
                             </div>

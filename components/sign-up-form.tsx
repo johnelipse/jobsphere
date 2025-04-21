@@ -1,36 +1,40 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { createUser } from '@/actions/users';
-import { Button } from '@/components/ui/button';
-import { toast } from '@mosespace/toast';
-import { signIn } from 'next-auth/react';
-import CustomText from './back-end/re-usable-inputs/text-reusable';
+import { createUser } from "@/actions/users";
+import { Button } from "@/components/ui/button";
+import { toast } from "@mosespace/toast";
+import { signIn } from "next-auth/react";
+import CustomText from "./back-end/re-usable-inputs/text-reusable";
 
 const formSchema = z
   .object({
     name: z.string().min(2, {
-      message: 'Name must be at least 2 characters.',
+      message: "Name must be at least 2 characters.",
     }),
     email: z.string().email({
-      message: 'Please enter a valid email address.',
+      message: "Please enter a valid email address.",
     }),
+    role: z.string(),
     password: z.string().min(8, {
-      message: 'Password must be at least 8 characters.',
+      message: "Password must be at least 8 characters.",
     }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
   });
 
 export default function SignUpForm() {
+  const searchParams = useSearchParams();
+
+  const role = searchParams.get("role");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -42,10 +46,11 @@ export default function SignUpForm() {
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: "",
+      email: "",
+      role: role || "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -56,14 +61,15 @@ export default function SignUpForm() {
         name: values.name,
         email: values.email,
         password: values.password,
+        role: values.role,
       });
       if (result.success) {
         toast.success(
-          'Account created!',
-          'Your company account has been created successfully.',
+          "Account created!",
+          "Your company account has been created successfully."
         );
         // Sign in the user after account creation
-        const signInResult = await signIn('credentials', {
+        const signInResult = await signIn("credentials", {
           email: values.email,
           password: values.password,
           redirect: false,
@@ -71,18 +77,18 @@ export default function SignUpForm() {
 
         if (signInResult?.error) {
           toast.error(
-            'Sign in failed',
-            "Your account was created but we couldn't sign you in automatically.",
+            "Sign in failed",
+            "Your account was created but we couldn't sign you in automatically."
           );
-          router.push('/login');
+          router.push("/login");
         } else {
           router.push(`/onboarding/${result.userId}`);
         }
       } else {
-        toast.error('Error', `${result.message}`);
+        toast.error("Error", `${result.message}`);
       }
     } catch (error) {
-      toast.error('Error', 'Something went wrong. Please try again.');
+      toast.error("Error", "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +134,7 @@ export default function SignUpForm() {
           className="w-full"
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Creating account...' : 'Create account'}
+          {isLoading ? "Creating account..." : "Create account"}
         </Button>
       </form>
     </>

@@ -13,6 +13,7 @@ interface CreateCompanyAccountParams {
   name: string;
   email: string;
   password: string;
+  role: string;
 }
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -155,6 +156,7 @@ export async function createUser({
   name,
   email,
   password,
+  role,
 }: CreateCompanyAccountParams) {
   try {
     // Check if user already exists
@@ -178,7 +180,7 @@ export async function createUser({
         name,
         email,
         passwordHash,
-        role: Role.USER,
+        role: role as Role,
       },
     });
 
@@ -334,6 +336,9 @@ export async function changePassword(data: {
 export async function getAllUsers() {
   try {
     const users = await db.user.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
         applications: true,
       },

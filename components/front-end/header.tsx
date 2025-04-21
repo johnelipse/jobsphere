@@ -59,44 +59,23 @@ export function Header({ user }: { user: User | null }) {
             </Link>
           </nav>
         </div>
-        <div className="flex items-center space-x-4">
-          <button className="text-gray-600 hover:text-gray-900">
-            <Search className="h-5 w-5" />
-          </button>
-          <button className="text-gray-600 hover:text-gray-900 relative">
-            <MessageCircle className="h-5 w-5" />
-          </button>
-          <button className="text-gray-600 hover:text-gray-900 relative">
-            <Bell className="h-5 w-5" />
-          </button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="lg"
-                className="bg-transparent text-gray-500 shadow-none hover:bg-transparent"
-              >
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={user?.image as string}
-                    alt={user?.name ?? ""}
-                  />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user?.name}</span>
-                  <span className="truncate text-xs">{user?.email}</span>
-                </div>
-                <ChevronsUpDown className="ml-auto size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-              side={"bottom"}
-              align="end"
-              sideOffset={4}
-            >
-              <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+        {user ? (
+          <div className="flex items-center space-x-4">
+            <button className="text-gray-600 hover:text-gray-900">
+              <Search className="h-5 w-5" />
+            </button>
+            <button className="text-gray-600 hover:text-gray-900 relative">
+              <MessageCircle className="h-5 w-5" />
+            </button>
+            <button className="text-gray-600 hover:text-gray-900 relative">
+              <Bell className="h-5 w-5" />
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-transparent text-gray-500 shadow-none hover:bg-transparent"
+                >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
                       src={user?.image as string}
@@ -108,40 +87,69 @@ export function Header({ user }: { user: User | null }) {
                     <span className="truncate font-semibold">{user?.name}</span>
                     <span className="truncate text-xs">{user?.email}</span>
                   </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Sparkles />
-                  <Link href="/update">Profile Settings</Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <BadgeCheck />
-                  Account
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <CreditCard />
-                  Billing
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Bell />
-                  Notifications
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => signOut({ callbackUrl: "/login" })}
+                  <ChevronsUpDown className="ml-auto size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side={"bottom"}
+                align="end"
+                sideOffset={4}
               >
-                <LogOut />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                <DropdownMenuLabel className="p-0 font-normal">
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage
+                        src={user?.image as string}
+                        alt={user?.name ?? ""}
+                      />
+                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">
+                        {user?.name}
+                      </span>
+                      <span className="truncate text-xs">{user?.email}</span>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <Sparkles />
+                    <Link href="/update">Profile Settings</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <BadgeCheck />
+                    Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <CreditCard />
+                    Billing
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Bell />
+                    Notifications
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                >
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <Button asChild>
+            <Link href="/role">SignUp</Link>
+          </Button>
+        )}
       </div>
     </header>
   );

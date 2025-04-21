@@ -1,4 +1,11 @@
-import { deleteJob, getAllJobs, getSingleJob, updateJob } from "@/actions/jobs";
+import {
+  createJob,
+  deleteJob,
+  getAllJobs,
+  getSingleJob,
+  updateJob,
+} from "@/actions/jobs";
+import { JobCreateCTO } from "@/types/types";
 
 export const jobService = {
   getJobs: async () => {
@@ -32,5 +39,13 @@ export const jobService = {
     }
 
     return jobUpdated;
+  },
+  create: async (data: JobCreateCTO) => {
+    const newJob = await createJob(data);
+    if (!newJob) {
+      throw new Error("Failed to delete application");
+    }
+
+    return newJob;
   },
 };

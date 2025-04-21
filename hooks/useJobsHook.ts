@@ -1,9 +1,27 @@
 import { jobService } from "@/services/job";
+import { JobCreateCTO } from "@/types/types";
 import { toast } from "@mosespace/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useJobs() {
   const queryClient = useQueryClient();
+
+  const createJobQuery = useMutation({
+    mutationFn: (data: JobCreateCTO) => jobService.create(data),
+    onSuccess: () => {
+      toast.success("Success", "Job submitted successfully.");
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+    onError: (error: Error) => {
+      console.log(error);
+      toast.error(
+        "error",
+        `Failed to create Category: ${
+          error.message || "Unknown error occurred"
+        }`
+      );
+    },
+  });
 
   // Query for fetching all contacts
   const jobsQuery = useQuery({
@@ -54,6 +72,9 @@ export function useJobs() {
     //mutations
     jobUpdated: updateJobQuery.mutate,
     deletedJob: deleteJobQuery.mutate,
+    createJob: createJobQuery.mutate,
+    success: createJobQuery.isSuccess,
+    isCreating: createJobQuery.isPending,
     isDeleting: deleteJobQuery.isPending,
     isUpdating: updateJobQuery.isPending,
   };

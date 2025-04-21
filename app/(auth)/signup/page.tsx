@@ -1,11 +1,11 @@
-import SignUpForm from '@/components/sign-up-form';
-import { siteConfig } from '@/constants/site';
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import SignUpForm from "@/components/sign-up-form";
+import { siteConfig } from "@/constants/site";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Sign Up',
-  description: 'Create a company account to manage your employees',
+  title: "Sign Up",
+  description: "Create a company account to manage your employees",
 };
 
 export default function SignUpPage() {
@@ -48,7 +48,7 @@ export default function SignUpPage() {
           </div>
           <SignUpForm />
           <p className="px-8 text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link
               href="/login"
               className="underline underline-offset-4 hover:text-primary"

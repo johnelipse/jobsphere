@@ -1,4 +1,11 @@
-import { Application, Job } from "@prisma/client";
+import {
+  Application,
+  ExperienceLevel,
+  Job,
+  JobType,
+  Status,
+  User,
+} from "@prisma/client";
 
 export interface LeaveRequest {
   id: string;
@@ -19,6 +26,15 @@ export interface CreateCTO {
   slug: string;
   title: string;
 }
+export interface JobCreateCTO {
+  title: string;
+  salary: number;
+  jobType: JobType;
+  requiredSkills: string[];
+  deadline: Date;
+  categoryId: string;
+  experience?: ExperienceLevel | undefined;
+}
 
 export interface LeaveFormData {
   leaveType: string;
@@ -32,6 +48,21 @@ export interface LeaveStatisticsData {
   pending: number;
   approved: number;
   rejected: number;
+}
+
+export interface ApplicationProp {
+  id: string;
+  job: Job;
+  jobId: string;
+
+  applicant: User;
+  applicantId: string;
+
+  coverLetter: string | null;
+  resume: string | null;
+  status: Status;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type JobQueriesResponse = {
@@ -52,13 +83,13 @@ export type MutationJobResponse = {
   error?: string;
 };
 export type ApplicationQueriesResponse = {
-  data: Application[];
+  data: ApplicationProp[];
   error?: string;
 };
 
 // For single contact queries
 export type SingleApplicationQueryResponse = {
-  data: Application | null;
+  data: ApplicationProp | null;
   error?: string;
 };
 

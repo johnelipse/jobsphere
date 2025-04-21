@@ -317,7 +317,7 @@ export default function LoginForm() {
 
         <div className="text-center">
           <Link
-            href="/signup"
+            href="/role"
             className="text-sm text-[#A1A1A9] hover:text-primary"
           >
             Don't have an account?

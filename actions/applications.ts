@@ -2,14 +2,14 @@
 
 import { ApplicationProps } from "@/components/front-end/jobs/application-dialog";
 import { api } from "@/config/axios";
-import { Application } from "@prisma/client";
+import { ApplicationProp } from "@/types/types";
 import { revalidatePath } from "next/cache";
 
 export async function getAllApplications() {
   try {
     const res = await api.get(`/applications`);
     const applications = res.data.data;
-    return applications as Application[];
+    return applications as ApplicationProp[];
   } catch (error) {
     console.log(error);
     return [];
@@ -19,7 +19,7 @@ export async function getSingleApplication(id: string) {
   try {
     const res = await api.get(`/applications/${id}`);
     const job = res.data.data;
-    return job as Application;
+    return job as ApplicationProp;
   } catch (error) {
     console.log(error);
     return null;
