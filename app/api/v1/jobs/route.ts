@@ -39,6 +39,11 @@ export async function GET(
         orderBy: {
           createdAt: "desc",
         },
+        include: {
+          applications: true,
+          category: true,
+          User: true,
+        },
       });
 
       return NextResponse.json(
@@ -59,6 +64,11 @@ export async function GET(
       const jobs = await db.job.findMany({
         orderBy: {
           createdAt: "desc",
+        },
+        include: {
+          applications: true,
+          category: true,
+          User: true,
         },
       });
 

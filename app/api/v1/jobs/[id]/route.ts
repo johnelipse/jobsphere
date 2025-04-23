@@ -12,6 +12,11 @@ export async function GET(
       where: {
         id,
       },
+      include: {
+        applications: true,
+        category: true,
+        User: true,
+      },
     });
 
     return NextResponse.json(
@@ -40,6 +45,7 @@ export async function PATCH(
 ): Promise<NextResponse<MutationJobResponse>> {
   const { id } = await params;
   const data = await req.json();
+  // console.log("API Data ✅:", data);
 
   try {
     const updatedJob = await db.job.update({

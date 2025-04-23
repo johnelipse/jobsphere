@@ -1,7 +1,12 @@
 import { jobService } from "@/services/job";
 import { JobCreateCTO } from "@/types/types";
 import { toast } from "@mosespace/toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 
 export function useJobs() {
   const queryClient = useQueryClient();
@@ -24,7 +29,7 @@ export function useJobs() {
   });
 
   // Query for fetching all contacts
-  const jobsQuery = useQuery({
+  const jobsQuery = useSuspenseQuery({
     queryKey: ["jobs"],
     queryFn: () => {
       const data = jobService.getJobs();
@@ -35,14 +40,21 @@ export function useJobs() {
   const updateJobQuery = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) =>
       jobService.updatedJob(data, id),
-    onSuccess: () => {
-      toast.success("Success", "Job updated successfully");
+    onSuccess: (data) => {
+      // console.log("Data ✅:", data);
+      // Check the 'ok' property of the result object
+      if (data.data.favourites === true) {
+        toast.success("Saved", "Job saved successfully");
+      } else {
+        toast.success("Updated", "Job updated successfully");
+      }
+
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
     },
     onError: (error: Error) => {
-      console.log(error);
+      console.error(error);
       toast.error(
-        "error",
+        "Failed",
         `Failed to update job: ${error.message || "Unknown error occurred"}`
       );
     },
@@ -68,6 +80,7 @@ export function useJobs() {
     jobs: jobsQuery.data ?? [],
     isLoading: jobsQuery.isLoading,
     error: jobsQuery.error || jobsQuery.error,
+    refetch: jobsQuery.refetch,
 
     //mutations
     jobUpdated: updateJobQuery.mutate,

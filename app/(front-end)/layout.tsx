@@ -15,7 +15,7 @@ export default async function FrontEndLayout({
     <div className="min-h-screen bg-gray-50">
       <Header user={user} />
       <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
-      <ChatSupportButton />
+      {/* <ChatSupportButton /> */}
       <Footer />
     </div>
   );

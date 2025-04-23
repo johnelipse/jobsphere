@@ -118,19 +118,19 @@ export default function JobUpdateForm({ paramId }: { paramId: string }) {
         description: job.description || "",
         company: job.company || "",
         salary: job.salary,
-        jobType: job.jobType,
+        jobType: job.jobType || "REMOTE",
         experience: job.experience || undefined,
         city: job.city || "",
         country: job.country || "",
-        status: job.status,
+        status: job.status || "active",
         requiredSkills: job.requiredSkills || [],
         deadline: deadlineDate,
       });
 
       // Update state values
-      setSelectedJobType(job.jobType);
+      setSelectedJobType(job.jobType || "REMOTE");
       setSelectedExperience(job.experience || "");
-      setSelectedStatus(job.status);
+      setSelectedStatus(job.status || "active");
       setSelectedDeadline(deadlineDate);
     }
   }, [job, form]);

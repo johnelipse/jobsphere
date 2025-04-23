@@ -1,15 +1,14 @@
 "use server";
 
 import { api } from "@/config/axios";
-import { JobCreateCTO } from "@/types/types";
-import { Job } from "@prisma/client";
+import { JobCreateCTO, JobCTO } from "@/types/types";
 import { revalidatePath } from "next/cache";
 
 export async function getAllJobs() {
   try {
     const res = await api.get(`/jobs`);
     const jobs = res.data.data;
-    return jobs as Job[];
+    return jobs as JobCTO[];
   } catch (error) {
     console.log(error);
     return [];
@@ -19,7 +18,7 @@ export async function getSingleJob(id: string) {
   try {
     const res = await api.get(`/jobs/${id}`);
     const job = res.data.data;
-    return job as Job;
+    return job as JobCTO;
   } catch (error) {
     console.log(error);
     return null;
@@ -27,8 +26,10 @@ export async function getSingleJob(id: string) {
 }
 
 export async function updateJob(data: any, id: string) {
+  const { favourites, ...dataToApi } = data;
+
   try {
-    await api.patch(`/jobs/${id}`, data, {
+    await api.patch(`/jobs/${id}`, dataToApi, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -36,6 +37,7 @@ export async function updateJob(data: any, id: string) {
 
     return {
       ok: true,
+      data,
     };
   } catch (error) {
     console.log(error);

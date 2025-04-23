@@ -1,20 +1,13 @@
 "use client";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Briefcase,
-  CalendarDays,
-  Clock,
-  MapPin,
-  Building,
-  ExternalLink,
-} from "lucide-react";
+import { ArrowLeft, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card } from "@/components/ui/card";
 import { useCategory } from "@/hooks/useCategories";
 import CategoryPageSkeleton from "./skeletons/category-page-skeleton";
+import { JobCard } from "./jobs/job-card";
+import JobCardSkeleton from "./skeletons/job-card-skeleton";
 
 // Helper function to format date
 function formatDate(dateString: Date) {
@@ -42,6 +35,12 @@ function formatDate(dateString: Date) {
 export default function CategoryDetailPage({ slug }: { slug: string }) {
   const { category, isLoading } = useCategory(slug);
 
+  const skeletonCount = 4;
+  const skeletonArray = Array.from(
+    { length: skeletonCount },
+    (_, index) => index
+  );
+
   if (isLoading) {
     return <CategoryPageSkeleton />;
   }
@@ -57,6 +56,36 @@ export default function CategoryDetailPage({ slug }: { slug: string }) {
       </div>
     );
   }
+
+  const jobsWithDeadlines = (category.jobs || []).map((job) => {
+    // Skip calculation if deadline is not set
+    if (!job.deadline) {
+      return {
+        ...job,
+        daysRemaining: null,
+        isExpired: false,
+      };
+    }
+
+    // Ensure deadline is a Date object
+    const deadlineDate = new Date(job.deadline);
+
+    // Get current date without time component for more accurate day calculation
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate difference in milliseconds
+    const differenceMs = deadlineDate.getTime() - today.getTime();
+
+    // Convert to days and round down
+    const daysRemaining = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+
+    return {
+      ...job,
+      daysRemaining: daysRemaining,
+      isExpired: daysRemaining < 0,
+    };
+  });
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -90,83 +119,29 @@ export default function CategoryDetailPage({ slug }: { slug: string }) {
           </p>
         </Card>
       ) : (
-        <div className="space-y-6">
-          {(category?.jobs ?? []).map((job) => (
-            <Card
-              key={job.id}
-              className="overflow-hidden transition-all hover:shadow-md"
-            >
-              <CardContent className="p-0">
-                <div className="p-6">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                        <Building className="h-4 w-4" />
-                        <span>{job.company}</span>
-                      </div>
-                      <h3 className="text-xl font-bold hover:text-primary transition-colors">
-                        <Link
-                          href={`/jobs/${job.id}`}
-                          className="hover:underline"
-                        >
-                          {job.title}
-                        </Link>
-                      </h3>
-
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        <Badge
-                          variant="outline"
-                          className="flex items-center gap-1"
-                        >
-                          <MapPin className="h-3 w-3" />
-                          {job.country}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className="flex items-center gap-1"
-                        >
-                          <Briefcase className="h-3 w-3" />
-                          {job.jobType}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className="flex items-center gap-1"
-                        >
-                          <Clock className="h-3 w-3" />
-                          {formatDate(job.createdAt)}
-                        </Badge>
-                      </div>
-
-                      <p className="mt-4 text-muted-foreground line-clamp-2">
-                        {job.description}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col items-start lg:items-end gap-3 mt-4 lg:mt-0">
-                      <div className="text-lg font-semibold">{job.salary}</div>
-                      <Button asChild>
-                        <Link href={`/jobs/${job.id}`}>
-                          View Job
-                          <ExternalLink className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="p-6 bg-muted/40">
-                  <h4 className="font-medium mb-2">Requirements:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                    {job.requiredSkills.map((req, index) => (
-                      <li key={index}>{req}</li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-4">
+          {isLoading
+            ? skeletonArray.map((index) => (
+                <JobCardSkeleton key={`skeleton-${index}`} />
+              ))
+            : jobsWithDeadlines
+                .slice(0, 4)
+                .map((job) => (
+                  <JobCard
+                    isSaved={job.isSaved as boolean}
+                    jobType={job.jobType}
+                    createdAt={job.createdAt}
+                    key={job.id}
+                    description={job.description ?? ""}
+                    id={job.id}
+                    title={job.title}
+                    company={job.company as string}
+                    country={job.country as string}
+                    city={job.city as string}
+                    logo={"https://hrty.vercel.app/uEFqB1"}
+                    daysRemaining={job.daysRemaining as number}
+                  />
+                ))}
         </div>
       )}
 

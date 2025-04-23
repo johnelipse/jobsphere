@@ -4,6 +4,7 @@ import { Job } from "@prisma/client";
 import { NewUserProps } from "../jobs-page";
 import { ApplicationCard } from "./application-card";
 import { ApplicationSkeleton } from "../skeletons/applications-skeleton";
+import { JobCTO } from "@/types/types";
 
 export function ApplicationList({
   currentUser,
@@ -11,7 +12,7 @@ export function ApplicationList({
   isLoading,
 }: {
   currentUser: NewUserProps | undefined;
-  jobs: Job[];
+  jobs: JobCTO[];
   isLoading: boolean;
 }) {
   console.log(jobs, currentUser);

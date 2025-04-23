@@ -157,6 +157,7 @@ model Job {
   experience     ExperienceLevel?
   city           String?
   country        String?
+  isSaved       Boolean? @default(false)
   status         StatusTypes      @default(active)
   requiredSkills String[] // Array of required skills
   deadline       DateTime

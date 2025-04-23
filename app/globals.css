@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Grotesk:wght@300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Grotesk:wght@300..700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --app-font: 'Space Grotesk', serif;
+  --app-font: "Space Grotesk", serif;
 }
 
 body {
@@ -15,38 +15,49 @@ body {
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 157.5 57.14% 2.75%;
+    --foreground: 184.62 86.67% 2.94%;
 
-    --primary: 158.96 53.1% 28.43%;
-    --primary-foreground: 157.5 22.22% 92.94%;
+    --primary: 182.46 81.33% 29.41%;
+    --primary-foreground: 180 33.33% 92.94%;
 
-    --card: 150 22.22% 96.47%;
-    --card-foreground: 157.5 57.14% 2.75%;
+    --card: 180 33.33% 96.47%;
+    --card-foreground: 184.62 86.67% 2.94%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 157.5 57.14% 2.75%;
+    --popover-foreground: 184.62 86.67% 2.94%;
 
-    --secondary: 158.18 20% 89.22%;
+    --secondary: 183.33 33.33% 89.41%;
     --secondary-foreground: 0 0% 0%;
 
-    --muted: 157.5 22.22% 92.94%;
+    --muted: 180 33.33% 92.94%;
     --muted-foreground: 0 0% 40%;
 
-    --accent: 157.5 22.22% 92.94%;
-    --accent-foreground: 160 54.55% 4.31%;
+    --accent: 180 33.33% 92.94%;
+    --accent-foreground: 180 81.82% 4.31%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.24% 60.2%;
+    --destructive-foreground: 210 40% 98.04%;
 
-    --border: 160 20.55% 85.69%;
-    --input: 160 8.26% 78.63%;
-    --ring: 158.96 53.1% 28.43%;
+    --border: 182.5 33.33% 85.88%;
 
-    --chart-1: 158.96 53.1% 28.43%;
-    --chart-2: 159.09 33% 39.22%;
-    --chart-3: 159.6 21.01% 53.33%;
-    --chart-4: 159.07 21.39% 60.59%;
-    --chart-5: 158.82 20.73% 67.84%;
+    --input: 180 13.76% 78.63%;
+
+    --ring: 182.46 81.33% 29.41%;
+
+    --chart-1: 182.46 81.33% 29.41%;
+    --chart-2: 182.31 50.98% 40%;
+    --chart-3: 183 34.19% 54.12%;
+    --chart-4: 182.65 34.34% 61.18%;
+    --chart-5: 182.22 33.33% 68.24%;
+
+    --sidebar: 180 42.86% 98.63%;
+    --sidebar-foreground: 184.62 86.67% 2.94%;
+    --sidebar-primary: 182.46 81.33% 29.41%;
+    --sidebar-primary-foreground: 180 33.33% 92.94%;
+    --sidebar-accent: 182.46 81.33% 29.41%;
+    --sidebar-accent-foreground: 180 33.33% 92.94%;
+    --sidebar-border: 182.5 33.33% 85.88%;
+    --sidebar-ring: 182.46 81.33% 29.41%;
 
     --radius: 0.5rem;
 
@@ -68,38 +79,49 @@ body {
   }
   .dark {
     --background: 0 0% 0%;
-    --foreground: 158.18 20% 89.22%;
+    --foreground: 183.33 33.33% 89.41%;
 
-    --primary: 158.96 53.1% 28.43%;
-    --primary-foreground: 157.5 22.22% 92.94%;
+    --primary: 182.46 81.33% 29.41%;
+    --primary-foreground: 180 33.33% 92.94%;
 
-    --card: 160 12% 4.9%;
-    --card-foreground: 158.18 20% 89.22%;
+    --card: 180 20% 4.9%;
+    --card-foreground: 183.33 33.33% 89.41%;
 
     --popover: 0 0% 0%;
-    --popover-foreground: 158.18 20% 89.22%;
+    --popover-foreground: 183.33 33.33% 89.41%;
 
-    --secondary: 157.78 52.94% 10%;
+    --secondary: 182.79 81.13% 10.39%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 9.8%;
     --muted-foreground: 0 0% 50.2%;
 
-    --accent: 157.78 52.94% 10%;
-    --accent-foreground: 158.18 20% 89.22%;
+    --accent: 182.79 81.13% 10.39%;
+    --accent-foreground: 183.33 33.33% 89.41%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.24% 60.2%;
+    --destructive-foreground: 210 40% 98.04%;
 
-    --border: 160 51.72% 5.69%;
-    --input: 162.86 7.69% 17.84%;
-    --ring: 158.96 53.1% 28.43%;
+    --border: 182.5 80% 5.88%;
 
-    --chart-1: 158.96 53.1% 28.43%;
-    --chart-2: 158.77 52.85% 24.12%;
-    --chart-3: 159.6 53.19% 18.43%;
-    --chart-4: 158.57 52.5% 15.69%;
-    --chart-5: 159.43 53.85% 12.75%;
+    --input: 185 13.04% 18.04%;
+
+    --ring: 182.46 81.33% 29.41%;
+
+    --chart-1: 182.46 81.33% 29.41%;
+    --chart-2: 182.88 81.25% 25.1%;
+    --chart-3: 182.28 81.44% 19.02%;
+    --chart-4: 182.69 80.72% 16.27%;
+    --chart-5: 182.18 82.09% 13.14%;
+
+    --sidebar: 180 6.25% 6.27%;
+    --sidebar-foreground: 183.33 33.33% 89.41%;
+    --sidebar-primary: 182.46 81.33% 29.41%;
+    --sidebar-primary-foreground: 180 33.33% 92.94%;
+    --sidebar-accent: 182.46 81.33% 29.41%;
+    --sidebar-accent-foreground: 180 33.33% 92.94%;
+    --sidebar-border: 182.5 80% 5.88%;
+    --sidebar-ring: 182.46 81.33% 29.41%;
 
     --radius: 0.5rem;
 
@@ -282,18 +304,18 @@ body {
 }
 
 /* Column group colors */
-.table th[data-column-group='Earnings'],
-.table td[data-column-group='Earnings'] {
+.table th[data-column-group="Earnings"],
+.table td[data-column-group="Earnings"] {
   @apply bg-[#e3f2fd]/40;
 }
 
-.table th[data-column-group='Reimbursement'],
-.table td[data-column-group='Reimbursement'] {
+.table th[data-column-group="Reimbursement"],
+.table td[data-column-group="Reimbursement"] {
   @apply bg-[#f3e5f5]/40;
 }
 
-.table th[data-column-group='Addition'],
-.table td[data-column-group='Addition'] {
+.table th[data-column-group="Addition"],
+.table td[data-column-group="Addition"] {
   @apply bg-[#fff3e0]/40;
 }
 
@@ -302,15 +324,15 @@ body {
   @apply bg-gray-50;
 }
 
-.table tbody tr[data-state='selected'] {
+.table tbody tr[data-state="selected"] {
   @apply bg-blue-50;
 }
 
-.table tbody tr[data-state='selected']:hover {
+.table tbody tr[data-state="selected"]:hover {
   @apply bg-blue-100;
 }
 
-.table tbody tr[data-state='selected'] td {
+.table tbody tr[data-state="selected"] td {
   @apply bg-opacity-50;
 }
 
@@ -330,11 +352,11 @@ body {
 }
 
 /* Ensure selected state shows through column colors */
-.table tbody tr[data-state='selected'] td {
+.table tbody tr[data-state="selected"] td {
   @apply relative;
 }
 
-.table tbody tr[data-state='selected'] td::after {
-  content: '';
+.table tbody tr[data-state="selected"] td::after {
+  content: "";
   @apply absolute inset-0 bg-blue-50 opacity-50 pointer-events-none;
 }

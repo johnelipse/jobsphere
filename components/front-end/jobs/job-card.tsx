@@ -1,7 +1,10 @@
-"use client";
-import Image from "next/image";
-import { Heart } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Heart, BookmarkIcon as BookmarkSimple, Wifi } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { getTimeAgo } from "@/lib/getTimeAgo";
+import Link from "next/link";
+import { JobApplicationDialog } from "./application-dialog";
+import { useJobs } from "@/hooks/useJobsHook";
+import { FaHeart } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 interface JobCardProps {
@@ -10,9 +13,14 @@ interface JobCardProps {
   company: string;
   country: string;
   city: string;
+  createdAt: Date;
   logo: string;
   daysRemaining?: number | string;
   showSaveButton?: boolean;
+  description: string;
+  jobType: string;
+  refetch?: any;
+  isSaved: boolean;
 }
 
 export function JobCard({
@@ -24,55 +32,87 @@ export function JobCard({
   logo,
   daysRemaining,
   showSaveButton = false,
+  description,
+  createdAt,
+  jobType,
+  isSaved,
+  refetch,
 }: JobCardProps) {
+  const { jobUpdated } = useJobs();
   const router = useRouter();
-  function handleRedirect() {
-    router.push(`/jobs/${encodeURIComponent(id)}`);
+
+  async function handleUpdateSaved() {
+    // console.log("Is Saved ✅:", isSaved);
+    const dataToUpdate = isSaved ? false : true;
+
+    const dataToSend = {
+      isSaved: dataToUpdate,
+      favourites: true,
+    };
+
+    try {
+      jobUpdated({ data: dataToSend, id });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      await refetch();
+      router.refresh();
+      router.prefetch("/jobs");
+    }
   }
 
   return (
-    <Card
-      onClick={() => handleRedirect()}
-      className="p-4 relative cursor-pointer"
-    >
-      {showSaveButton && (
-        <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-          <Heart className="h-5 w-5" />
-        </button>
-      )}
-      <div className="flex items-center mb-3">
-        <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center mr-3">
-          <Image
-            src={logo || "/placeholder.svg"}
-            alt={`${company} logo`}
-            width={40}
-            height={40}
-            className="rounded"
-          />
-        </div>
-        <div>
-          <h3 className="font-medium text-sm">{title}</h3>
-          <p className="text-xs text-gray-500">{company}</p>
-        </div>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="text-xs text-gray-500">
-          <span>
-            {country}-{city}
-          </span>
-        </div>
-        {daysRemaining && (
-          <div
-            className={`text-xs ${
-              Number(daysRemaining) < 10
-                ? "text-red-500 font-medium"
-                : "text-gray-500"
-            }`}
-          >
-            {daysRemaining} days remaining
+    <Card className="w-full max-w-md shadow-sm">
+      <CardContent className="p-4 space-y-4">
+        <div className="flex justify-between  items-center">
+          <div className="flex items-center gap-2">
+            <div className="bg-green-100 w-8 h-8 flex items-center justify-center rounded-md">
+              <span className="text-green-800 font-medium">J</span>
+            </div>
+            <span className="text-emerald-700 text-sm font-medium">
+              {daysRemaining} days remaining
+            </span>
           </div>
-        )}
-      </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleUpdateSaved()}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              {isSaved === true ? (
+                <FaHeart className="text-[#E71D36]" size={20} />
+              ) : (
+                <Heart size={20} />
+              )}
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <Link
+            href={`/jobs/${id}`}
+            className="text-lg font-semibold text-purple-950"
+          >
+            {title}
+          </Link>
+          <p className="text-gray-700 text-sm">{company}</p>
+          <div className="flex justify-between items-center gap-2 text-gray-600 text-xs font-bold">
+            <span className="line-clamp-1 text-[0.61rem]">{`${country}-${city}`}</span>
+            <span>•</span>
+            <span className="text-xs">{getTimeAgo(createdAt)}</span>
+            <span>•</span>
+            <div className="flex items-center gap-1 text-xs">
+              <Wifi size={14} className="text-gray-500" />
+              <span>{jobType}</span>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-sm line-clamp-4 text-gray-700">{description}</p>
+      </CardContent>
+
+      <CardFooter className="p-4 pt-0">
+        <JobApplicationDialog jobId={id} jobTitle={title} />
+      </CardFooter>
     </Card>
   );
 }

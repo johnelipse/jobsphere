@@ -1,6 +1,5 @@
 "use client";
 import { Copy, Heart, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useJob } from "@/hooks/useJobsHook";
 import JobDetailsSkeleton from "./job-details-skeloton";
 import { calculateJobDeadline } from "@/lib/getDeadline";

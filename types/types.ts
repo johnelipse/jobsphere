@@ -1,9 +1,11 @@
 import {
   Application,
+  Category,
   ExperienceLevel,
   Job,
   JobType,
   Status,
+  StatusTypes,
   User,
 } from "@prisma/client";
 
@@ -36,6 +38,31 @@ export interface JobCreateCTO {
   experience?: ExperienceLevel | undefined;
 }
 
+export interface JobCTO {
+  id: string;
+  title: string;
+  isSaved: boolean | null;
+  description: string | null;
+  company: string | null;
+  salary: number;
+  jobType: JobType | null;
+  experience: ExperienceLevel | null;
+  city: string | null;
+  country: string | null;
+  status: StatusTypes | null;
+  requiredSkills: string[];
+  deadline: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  User: User | null;
+  userId: string | null;
+
+  category: Category | null;
+  categoryId: string | null;
+
+  applications: Application[];
+}
+
 export interface LeaveFormData {
   leaveType: string;
   startDate: Date;
@@ -66,13 +93,13 @@ export interface ApplicationProp {
 }
 
 export type JobQueriesResponse = {
-  data: Job[];
+  data: JobCTO[];
   error?: string;
 };
 
 // For single contact queries
 export type SingleJobQueryResponse = {
-  data: Job | null;
+  data: JobCTO | null;
   error?: string;
 };
 

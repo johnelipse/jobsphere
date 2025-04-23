@@ -5,9 +5,9 @@ import Link from "next/link";
 import { Eye } from "lucide-react";
 import SortableColumn from "@/components/back-end/DataTableColumns/SortableColumn";
 import ActionColumn from "@/components/back-end/DataTableColumns/ActionColumn";
-import { Job } from "@prisma/client";
+import { JobCTO } from "@/types/types";
 
-export const columns: ColumnDef<Job>[] = [
+export const columns: ColumnDef<JobCTO>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => (

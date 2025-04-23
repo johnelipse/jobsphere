@@ -23,50 +23,55 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { signOut } from "next-auth/react";
 import { Button } from "../ui/button";
 import { User } from "@prisma/client";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export function Header({ user }: { user: User | null }) {
+  const navLinks = [
+    {
+      name: "Home",
+      link: "/",
+    },
+    {
+      name: "Jobs",
+      link: "/jobs",
+    },
+  ];
+
+  const pathName = usePathname();
+
   return (
     <header className="bg-white border-b sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
         <div className="flex items-center space-x-6">
           <Link href="/" className="flex items-center">
-            <span className="text-amber-400 font-bold text-2xl">FUZU</span>
+            <Image
+              width={324}
+              height={124}
+              src="/app-logo.png"
+              className="w-auto h-[2.7rem]"
+              alt="logo"
+            />
           </Link>
           <nav className="hidden md:flex items-center space-x-6">
-            <Link
-              href="/"
-              className="text-sm font-medium border-b-2 border-amber-400 pb-4 pt-4"
-            >
-              Home
-            </Link>
-            <Link
-              href="/jobs"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 pb-4 pt-4"
-            >
-              Jobs
-            </Link>
-            <Link
-              href="/learn"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 pb-4 pt-4"
-            >
-              Learn
-            </Link>
-            <Link
-              href="/forum"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 pb-4 pt-4"
-            >
-              Forum
-            </Link>
+            {navLinks.map((nav, i) => {
+              const active = pathName === nav.link;
+              return (
+                <Link
+                  key={i}
+                  href={nav.link}
+                  className={`text-sm font-medium text-gray-600 hover:text-gray-900 pb-4 pt-4 ${
+                    active && "border-b-[1px] border-green-900"
+                  }`}
+                >
+                  {nav.name}
+                </Link>
+              );
+            })}
           </nav>
         </div>
         {user ? (
           <div className="flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-gray-900">
-              <Search className="h-5 w-5" />
-            </button>
-            <button className="text-gray-600 hover:text-gray-900 relative">
-              <MessageCircle className="h-5 w-5" />
-            </button>
             <button className="text-gray-600 hover:text-gray-900 relative">
               <Bell className="h-5 w-5" />
             </button>

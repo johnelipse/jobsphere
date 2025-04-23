@@ -29,13 +29,14 @@ import {
 } from "@/components/ui/dialog";
 import { Application, Job } from "@prisma/client";
 import { useApplications } from "@/hooks/useApplicationHook";
+import { JobCTO } from "@/types/types";
 
 export function ApplicationCard({
   application,
   jobs,
 }: {
   application: Application;
-  jobs: Job[];
+  jobs: JobCTO[];
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const job = jobs.find((job) => job.id === application.jobId);
