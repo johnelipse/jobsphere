@@ -96,7 +96,7 @@ export function useJob(id: string) {
   const queryClient = useQueryClient();
 
   // Query for fetching all contacts
-  const singleJobQuery = useQuery({
+  const singleJobQuery = useSuspenseQuery({
     queryKey: ["jobs"],
     queryFn: () => {
       const data = jobService.getJob(id);

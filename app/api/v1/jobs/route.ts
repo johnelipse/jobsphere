@@ -1,5 +1,8 @@
+import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { JobQueriesResponse, MutationJobResponse } from "@/types/types";
+import { actionTypes } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -109,10 +112,23 @@ export async function POST(
   req: NextRequest
 ): Promise<NextResponse<MutationJobResponse>> {
   const data = await req.json();
+  const userId = req.headers.get("userId") as string;
   try {
     const newJob = await db.job.create({
       data,
     });
+    await db.activityLog.create({
+      data: {
+        userId: userId,
+        action: actionTypes.CREATED,
+        description: `Job titled "${newJob.title}" created.`,
+        details: {
+          jobId: newJob.id,
+          title: newJob.title,
+        },
+      },
+    });
+
     return NextResponse.json(
       {
         success: true,

@@ -153,3 +153,53 @@ export type MutationCategoryResponse = {
   data?: CategoryProps | null;
   error?: string;
 };
+
+export interface HireCreateProps {
+  jobTitle: string;
+  startDate: Date;
+  employmentType: JobType;
+  salaryOffered: number;
+  employerId: string;
+  applicantId: string;
+}
+export interface HireCreateCTO {
+  id: string;
+  jobTitle: string;
+  startDate: Date;
+  employmentType: JobType;
+  salaryOffered: number;
+  employerId: string;
+  applicantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface HireProps {
+  id: string;
+  jobTitle: string;
+  startDate: Date;
+  employmentType: JobType;
+  salaryOffered: number;
+  employerId: string;
+  User: User;
+  applicantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type HireQueriesResponse = {
+  data: HireProps[];
+  error?: string;
+};
+
+// For single contact queries
+export type SingleHireQueryResponse = {
+  data: HireProps | null;
+  error?: string;
+};
+
+// For mutation operations
+export type MutationHireResponse = {
+  success: boolean;
+  data?: HireCreateCTO | null;
+  error?: string;
+};

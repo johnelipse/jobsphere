@@ -19,6 +19,8 @@ enum Role {
 model User {
   id                   String        @id @default(cuid())
   name                 String
+  job                  String?
+  salary               Int?
   email                String        @unique
   emailVerified        DateTime?
    headline            String? 
@@ -47,20 +49,26 @@ model User {
   feedbacks            Feedback[]
   accounts             Account[]
   sessions             Session[]
-  activityLogs         ActivityLog[] @relation("UserActivityLog")
+  activityLogs         ActivityLog[]
   jobs                 Job[]
   applications         Application[]
+  hires                Hire[]
+}
+
+enum actionTypes {
+  CREATED
+  NEW_APP
+  IS_EXPIRING
 }
 
 model ActivityLog {
   id          String   @id @default(cuid())
-  userId      String
-  action      String
-  description String?
-  details     Json?
+  action      actionTypes  
+  description String?  
+  details    Json?  
   createdAt   DateTime @default(now())
-
-  user User @relation("UserActivityLog", fields: [userId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id])
+  userId      String
 }
 
 model Account {
@@ -197,3 +205,20 @@ enum Status {
   ACCEPTED
   REJECTED
 }
+
+model Hire {
+   id          String   @id @default(cuid())
+   jobTitle    String
+   startDate   DateTime
+   employmentType  JobType
+   salaryOffered    Int
+   employerId       String
+   User             User @relation(fields: [applicantId], references: [id])
+   applicantId      String
+   createdAt   DateTime @default(now())
+   updatedAt   DateTime @updatedAt
+}
+
+
+
+

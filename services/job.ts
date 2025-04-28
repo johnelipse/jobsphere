@@ -33,17 +33,17 @@ export const jobService = {
     return jobUpdated;
   },
   delete: async (id: string) => {
-    const jobUpdated = await deleteJob(id);
-    if (!jobUpdated) {
+    const jobDeleted = await deleteJob(id);
+    if (!jobDeleted) {
       throw new Error("Failed to delete job");
     }
 
-    return jobUpdated;
+    return jobDeleted;
   },
   create: async (data: JobCreateCTO) => {
     const newJob = await createJob(data);
     if (!newJob) {
-      throw new Error("Failed to delete application");
+      throw new Error("Failed to create job");
     }
 
     return newJob;

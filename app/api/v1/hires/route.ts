@@ -1,14 +1,11 @@
 import { db } from "@/lib/db";
-import {
-  ApplicationQueriesResponse,
-  MutationApplicationResponse,
-} from "@/types/types";
+import { HireQueriesResponse, MutationHireResponse } from "@/types/types";
 import { actionTypes } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest
-): Promise<NextResponse<ApplicationQueriesResponse>> {
+): Promise<NextResponse<HireQueriesResponse>> {
   try {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search");
@@ -25,12 +22,12 @@ export async function GET(
       const where: any = {};
 
       if (search) {
-        where.OR = [{ status: { contains: search, mode: "insensitive" } }];
+        where.OR = [{ jobTitle: { contains: search, mode: "insensitive" } }];
       }
 
-      const total = await db.application.count({ where });
+      const total = await db.hire.count({ where });
 
-      const applications = await db.application.findMany({
+      const hires = await db.hire.findMany({
         where,
         skip,
         take: limit,
@@ -38,46 +35,44 @@ export async function GET(
           createdAt: "desc",
         },
         include: {
-          applicant: true,
-          job: true,
+          User: true,
         },
       });
 
       return NextResponse.json(
         {
-          data: applications,
+          data: hires,
           meta: {
             total,
             page,
             limit,
             totalPages: Math.ceil(total / limit),
           },
-          message: "Applications fetched successfully",
+          message: "invitations fetched successfully",
         },
         { status: 200 }
       );
     } else {
       // Return all items without pagination
-      const applications = await db.application.findMany({
+      const hires = await db.hire.findMany({
         orderBy: {
           createdAt: "desc",
         },
         include: {
-          applicant: true,
-          job: true,
+          User: true,
         },
       });
 
       return NextResponse.json(
         {
-          data: applications,
+          data: hires,
           meta: {
-            total: applications.length,
+            total: hires.length,
             page: 1,
-            limit: applications.length,
+            limit: hires.length,
             totalPages: 1,
           },
-          message: "Applications fetched successfully",
+          message: "invitations fetched successfully",
         },
         { status: 200 }
       );
@@ -94,7 +89,7 @@ export async function GET(
           limit: 10,
           totalPages: 0,
         },
-        message: "Failed to fetch applications",
+        message: "Failed to fetch invitations",
       },
       { status: 500 }
     );
@@ -103,34 +98,17 @@ export async function GET(
 
 export async function POST(
   req: NextRequest
-): Promise<NextResponse<MutationApplicationResponse>> {
+): Promise<NextResponse<MutationHireResponse>> {
   const data = await req.json();
-  const userId = req.headers.get("userId") as string;
   try {
-    const newApplication = await db.application.create({
+    const newInvite = await db.hire.create({
       data,
     });
-
-    const jobs = await db.job.findMany({});
-    const appJob = jobs.find((job) => job.id === newApplication.jobId);
-
-    await db.activityLog.create({
-      data: {
-        userId: userId,
-        action: actionTypes.NEW_APP,
-        description: `Application for "${appJob?.title}" was recieved`,
-        details: {
-          jobId: appJob?.id,
-          title: appJob?.title,
-        },
-      },
-    });
-
     return NextResponse.json(
       {
         success: true,
-        data: newApplication,
-        message: "Application created successfully.",
+        data: newInvite,
+        message: "Invitation created successfully.",
       },
       { status: 201 }
     );
@@ -140,7 +118,7 @@ export async function POST(
       {
         success: false,
         data: null,
-        error: "Failed to create application",
+        error: "Failed to create Invitation",
       },
       { status: 500 }
     );

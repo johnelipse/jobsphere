@@ -22,6 +22,8 @@ import { useSession } from "next-auth/react";
 import { ApplicationList } from "./jobs/application-list";
 import JobCardSkeleton from "./skeletons/job-card-skeleton";
 import { useCategories } from "@/hooks/useCategories";
+import { EmployeeHireCard } from "../employee-hire-car";
+import { useHires } from "@/hooks/useHireHook";
 export interface NewUserProps extends User {
   applications: Application[];
 }
@@ -29,6 +31,7 @@ export interface NewUserProps extends User {
 export default function JobsPage({ users }: { users: NewUserProps[] }) {
   const { jobs, isLoading, refetch } = useJobs();
   const { allCategories } = useCategories();
+  const { Invitations } = useHires();
   const skeletonCount = 12;
   const skeletonArray = Array.from(
     { length: skeletonCount },
@@ -149,6 +152,10 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
 
   const savedJobs = jobsWithDeadlines.filter((job) => job.isSaved === true);
 
+  const filteredInvitations = Invitations.filter((inv) =>
+    users.some((user) => user.id === inv.applicantId)
+  );
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="container mx-auto px-4">
@@ -173,10 +180,10 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
               My applications
             </TabsTrigger>
             <TabsTrigger
-              value="preferences"
+              value="hire"
               className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-500 rounded-none bg-transparent py-2"
             >
-              Career preferences
+              Hirings
             </TabsTrigger>
           </TabsList>
           <main className="flex-1 py-6 bg-gray-50">
@@ -382,8 +389,20 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
                 />
               </div>
             </TabsContent>
-            <TabsContent value="preferences">
-              <p>Preferences</p>
+            <TabsContent value="hire">
+              {filteredInvitations.length > 0 ? (
+                filteredInvitations.map((invitation) => (
+                  <EmployeeHireCard
+                    key={invitation.id}
+                    invitation={invitation}
+                    users={users}
+                  />
+                ))
+              ) : (
+                <div className="max-w-3xl mx-auto border-[1px] border-gray-400 py-24 border-dotted mt-24">
+                  <p className="text-center">No Job invitations found</p>
+                </div>
+              )}
             </TabsContent>
           </main>
         </Tabs>

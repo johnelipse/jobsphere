@@ -2,36 +2,33 @@
 
 import { api } from "@/config/axios";
 import { authOptions } from "@/lib/auth";
-import { JobCreateCTO, JobCTO } from "@/types/types";
+import { HireCreateProps, HireProps } from "@/types/types";
 import { getServerSession } from "next-auth";
-import { revalidatePath } from "next/cache";
 
-export async function getAllJobs() {
+export async function getAllInvitations() {
   try {
-    const res = await api.get(`/jobs`);
-    const jobs = res.data.data;
-    return jobs as JobCTO[];
+    const res = await api.get(`/hires`);
+    const invitations = res.data.data;
+    return invitations as HireProps[];
   } catch (error) {
     console.log(error);
     return [];
   }
 }
-export async function getSingleJob(id: string) {
+export async function getSingleInvitation(id: string) {
   try {
-    const res = await api.get(`/jobs/${id}`);
-    const job = res.data.data;
-    return job as JobCTO;
+    const res = await api.get(`/hires/${id}`);
+    const invitation = res.data.data;
+    return invitation as HireProps;
   } catch (error) {
     console.log(error);
     return null;
   }
 }
 
-export async function updateJob(data: any, id: string) {
-  const { favourites, ...dataToApi } = data;
-
+export async function updateInvitation(data: any, id: string) {
   try {
-    await api.patch(`/jobs/${id}`, dataToApi, {
+    await api.patch(`/hires/${id}`, data, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -49,9 +46,9 @@ export async function updateJob(data: any, id: string) {
   }
 }
 
-export async function deleteJob(id: string) {
+export async function deleteInvitation(id: string) {
   try {
-    await api.delete(`/jobs/${id}`, {
+    await api.delete(`/hires/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -68,24 +65,25 @@ export async function deleteJob(id: string) {
   }
 }
 
-export async function createJob(data: JobCreateCTO) {
+export async function createInvitation(data: HireCreateProps) {
   const session = await getServerSession(authOptions);
   const userId = session?.user.id;
   try {
-    const res = await api.post(`/jobs`, data, {
+    const res = await api.post(`/hires`, data, {
       headers: {
         "Content-Type": "application/json",
         userId: userId,
       },
     });
 
-    revalidatePath("/categories");
-    revalidatePath("/jobs");
-    revalidatePath("/");
+    // revalidatePath("/categories");
+    // revalidatePath("/jobs");
+    // revalidatePath("/");
 
-    revalidatePath("/dashboard/jobs");
+    // revalidatePath("/dashboard/jobs");
     return {
       ok: true,
+      data,
     };
   } catch (error) {
     console.log(error);

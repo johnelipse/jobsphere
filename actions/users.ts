@@ -235,13 +235,13 @@ export async function updateProfile(data: any) {
     });
 
     // Create activity log
-    await db.activityLog.create({
-      data: {
-        userId: session.user.id,
-        action: "PROFILE_UPDATE",
-        description: "User updated their profile",
-      },
-    });
+    // await db.activityLog.create({
+    //   data: {
+    //     userId: session.user.id,
+    //     action: "PROFILE_UPDATE",
+    //     description: "User updated their profile",
+    //   },
+    // });
 
     revalidatePath("/dashboard/settings");
     return {
@@ -313,13 +313,13 @@ export async function changePassword(data: {
     });
 
     // Create activity log
-    await db.activityLog.create({
-      data: {
-        userId: session.user.id,
-        action: "PASSWORD_CHANGE",
-        description: "User changed their password",
-      },
-    });
+    // await db.activityLog.create({
+    //   data: {
+    //     userId: session.user.id,
+    //     action: "PASSWORD_CHANGE",
+    //     description: "User changed their password",
+    //   },
+    // });
 
     return {
       success: true,
@@ -341,6 +341,7 @@ export async function getAllUsers() {
       },
       include: {
         applications: true,
+        activityLogs: true,
       },
     });
     return users;
@@ -355,6 +356,10 @@ export async function getSingleUser(id: string) {
     const user = await db.user.findUnique({
       where: {
         id,
+      },
+      include: {
+        applications: true,
+        activityLogs: true,
       },
     });
     return user;

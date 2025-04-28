@@ -1,7 +1,11 @@
 import { categoryServices } from "@/services/categories";
 import { CreateCTO } from "@/types/types";
 import { toast } from "@mosespace/toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 
 export function useCategories() {
   const queryClient = useQueryClient();
@@ -23,7 +27,7 @@ export function useCategories() {
     },
   });
 
-  const categoryQuery = useQuery({
+  const categoryQuery = useSuspenseQuery({
     queryKey: ["categories"],
     queryFn: () => {
       const categories = categoryServices.getCategories();
@@ -84,7 +88,7 @@ export function useCategories() {
 
 export function useCategory(slug: string) {
   const queryClient = useQueryClient();
-  const singleCatQuery = useQuery({
+  const singleCatQuery = useSuspenseQuery({
     queryKey: ["categories"],
     queryFn: () => {
       const category = categoryServices.getCategory(slug);

@@ -1,7 +1,12 @@
 import { ApplicationProps } from "@/components/front-end/jobs/application-dialog";
 import { applicationservice } from "@/services/application";
 import { toast } from "@mosespace/toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 
 export function useApplications() {
   const queryClient = useQueryClient();
@@ -26,7 +31,7 @@ export function useApplications() {
     },
   });
   // Query for fetching all contacts
-  const applicationsQuery = useQuery({
+  const applicationsQuery = useSuspenseQuery({
     queryKey: ["applications"],
     queryFn: () => {
       const applications = applicationservice.getApplications();
@@ -88,7 +93,7 @@ export function useApplication(id: string) {
   const queryClient = useQueryClient();
 
   // Query for fetching all contacts
-  const singleApplicationQuery = useQuery({
+  const singleApplicationQuery = useSuspenseQuery({
     queryKey: ["applications"],
     queryFn: () => {
       const data = applicationservice.getApplication(id);

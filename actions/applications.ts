@@ -2,7 +2,9 @@
 
 import { ApplicationProps } from "@/components/front-end/jobs/application-dialog";
 import { api } from "@/config/axios";
+import { authOptions } from "@/lib/auth";
 import { ApplicationProp } from "@/types/types";
+import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 
 export async function getAllApplications() {
@@ -65,10 +67,13 @@ export async function deleteApplication(id: string) {
 }
 
 export async function createApplication(data: ApplicationProps) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id as string;
   try {
     const res = await api.post(`/applications`, data, {
       headers: {
         "Content-Type": "application/json",
+        userId: userId,
       },
     });
 

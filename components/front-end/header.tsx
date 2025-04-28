@@ -6,8 +6,6 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
-  MessageCircle,
-  Search,
   Sparkles,
 } from "lucide-react";
 import {
@@ -25,8 +23,15 @@ import { Button } from "../ui/button";
 import { User } from "@prisma/client";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Session } from "next-auth";
 
-export function Header({ user }: { user: User | null }) {
+export function Header({
+  user,
+  session,
+}: {
+  user: User | null;
+  session: Session | null;
+}) {
   const navLinks = [
     {
       name: "Home",
@@ -36,6 +41,14 @@ export function Header({ user }: { user: User | null }) {
       name: "Jobs",
       link: "/jobs",
     },
+    ...(session?.user.role !== "USER"
+      ? [
+          {
+            name: "Hire Talent",
+            link: "/talents",
+          },
+        ]
+      : []),
   ];
 
   const pathName = usePathname();

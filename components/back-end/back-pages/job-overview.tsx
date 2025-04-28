@@ -14,9 +14,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useJobs } from "@/hooks/useJobsHook";
+import { ActivityLog, Application, User } from "@prisma/client";
+import { useApplications } from "@/hooks/useApplicationHook";
+import { getTimeAgo } from "@/lib/getTimeAgo";
 
-export function JobOverview() {
+export function JobOverview({
+  user,
+}: {
+  user:
+    | (User & { applications: Application[] } & { activityLogs: ActivityLog[] })
+    | null;
+}) {
   const { jobs } = useJobs();
+  const { applications } = useApplications();
   const activeJobs = jobs.filter((job) => job.status === "active");
 
   const jobsWithDeadlines = jobs.map((job) => {
@@ -51,6 +61,10 @@ export function JobOverview() {
 
   const soonExpiring = jobsWithDeadlines.filter(
     (job) => job.daysRemaining !== null && job.daysRemaining < 10
+  ).length;
+
+  const userApplications = applications.filter(
+    (app) => app.applicantId === user?.id
   ).length;
 
   return (
@@ -112,7 +126,7 @@ export function JobOverview() {
             <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">142</div>
+            <div className="text-2xl font-bold">{userApplications}</div>
             <p className="text-xs text-muted-foreground">+28 this week</p>
           </CardContent>
         </Card>
@@ -127,23 +141,38 @@ export function JobOverview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center gap-4 rounded-lg border p-3">
-              <div className="rounded-full bg-blue-100 p-2">
-                <Users className="h-4 w-4 text-blue-600" />
-              </div>
-              <div>
-                <p className="font-medium">12 new applications received</p>
-                <p className="text-sm text-muted-foreground">
-                  For Senior Developer position
-                </p>
-              </div>
-              <div className="ml-auto flex items-center gap-1 text-sm text-muted-foreground">
-                <Clock className="h-3 w-3" />
-                <span>2h ago</span>
-              </div>
-            </div>
+            {user?.activityLogs.map((log) => {
+              return (
+                <div className="flex items-center gap-4 rounded-lg border p-3">
+                  {log.action == "NEW_APP" ? (
+                    <div className="rounded-full bg-blue-100 p-2">
+                      <Users className="h-4 w-4 text-blue-600" />
+                    </div>
+                  ) : log.action === "CREATED" ? (
+                    <div className="rounded-full bg-green-100 p-2">
+                      <FileCheck className="h-4 w-4 text-green-600" />
+                    </div>
+                  ) : (
+                    log.action === "IS_EXPIRING" && (
+                      <div className="rounded-full bg-amber-100 p-2">
+                        <Clock className="h-4 w-4 text-amber-600" />
+                      </div>
+                    )
+                  )}
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      {log.description}
+                    </p>
+                  </div>
+                  <div className="ml-auto flex items-center gap-1 text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>{getTimeAgo(log.createdAt)}</span>
+                  </div>
+                </div>
+              );
+            })}
 
-            <div className="flex items-center gap-4 rounded-lg border p-3">
+            {/* <div className="flex items-center gap-4 rounded-lg border p-3">
               <div className="rounded-full bg-green-100 p-2">
                 <FileCheck className="h-4 w-4 text-green-600" />
               </div>
@@ -173,7 +202,7 @@ export function JobOverview() {
                 <Clock className="h-3 w-3" />
                 <span>Just now</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
