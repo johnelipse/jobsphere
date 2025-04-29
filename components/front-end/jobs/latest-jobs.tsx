@@ -174,6 +174,7 @@ export function LatestJobSection({
                   className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                 >
                   <JobCard
+                    myJob={job}
                     isSaved={job.isSaved as boolean}
                     jobType={job.jobType as string}
                     createdAt={job.createdAt}

@@ -24,6 +24,8 @@ import JobCardSkeleton from "./skeletons/job-card-skeleton";
 import { useCategories } from "@/hooks/useCategories";
 import { EmployeeHireCard } from "../employee-hire-car";
 import { useHires } from "@/hooks/useHireHook";
+import { useIsaved } from "@/hooks/useIsaved";
+import { Session } from "next-auth";
 export interface NewUserProps extends User {
   applications: Application[];
 }
@@ -31,6 +33,9 @@ export interface NewUserProps extends User {
 export default function JobsPage({ users }: { users: NewUserProps[] }) {
   const { jobs, isLoading, refetch } = useJobs();
   const { allCategories } = useCategories();
+
+  const { items } = useIsaved((state) => state);
+
   const { Invitations } = useHires();
   const skeletonCount = 12;
   const skeletonArray = Array.from(
@@ -62,6 +67,31 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
 
     return {
       ...job,
+      daysRemaining: daysRemaining,
+      isExpired: daysRemaining < 0,
+    };
+  });
+  const itemsWithDeadlines = items.map((item) => {
+    // Skip calculation if deadline is not set
+    if (!item.deadline) {
+      return {
+        ...item,
+        daysRemaining: null,
+        isExpired: false,
+      };
+    }
+
+    // Ensure deadline is a Date object
+    const deadlineDate = new Date(item.deadline);
+
+    // Calculate difference in milliseconds
+    const differenceMs = deadlineDate.getTime() - new Date().getTime();
+
+    // Convert to days and round down
+    const daysRemaining = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+
+    return {
+      ...item,
       daysRemaining: daysRemaining,
       isExpired: daysRemaining < 0,
     };
@@ -150,7 +180,12 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
     setFilteredJobs(jobsWithDeadlines);
   };
 
-  const savedJobs = jobsWithDeadlines.filter((job) => job.isSaved === true);
+  const savedJobs = itemsWithDeadlines;
+
+  function findJobInBoth(id: string): boolean {
+    const JobInBoth = items.find((item) => item.id === id);
+    return !!JobInBoth;
+  }
 
   const filteredInvitations = Invitations.filter((inv) =>
     users.some((user) => user.id === inv.applicantId)
@@ -179,12 +214,15 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
             >
               My applications
             </TabsTrigger>
-            <TabsTrigger
-              value="hire"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-500 rounded-none bg-transparent py-2"
-            >
-              Hirings
-            </TabsTrigger>
+
+            {session.data?.user.role === "USER" && (
+              <TabsTrigger
+                value="hire"
+                className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-500 rounded-none bg-transparent py-2"
+              >
+                Hirings
+              </TabsTrigger>
+            )}
           </TabsList>
           <main className="flex-1 py-6 bg-gray-50">
             <TabsContent value="find-job">
@@ -331,23 +369,44 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
                     ? skeletonArray.map((index) => (
                         <JobCardSkeleton key={`skeleton-${index}`} />
                       ))
-                    : filteredJobs.map((job) => (
-                        <JobCard
-                          refetch={refetch}
-                          jobType={job.jobType as string}
-                          createdAt={job.createdAt}
-                          key={job.id}
-                          description={job.description ?? ""}
-                          id={job.id}
-                          title={job.title}
-                          company={job.company as string}
-                          country={job.country as string}
-                          city={job.city as string}
-                          logo={"https://hrty.vercel.app/uEFqB1"}
-                          daysRemaining={job.daysRemaining as number}
-                          isSaved={job.isSaved as boolean}
-                        />
-                      ))}
+                    : filteredJobs.map((job) => {
+                        const isEqual = findJobInBoth(job.id);
+                        return isEqual ? (
+                          <JobCard
+                            refetch={refetch}
+                            jobType={job.jobType as string}
+                            myJob={job}
+                            createdAt={job.createdAt}
+                            key={job.id}
+                            description={job.description ?? ""}
+                            id={job.id}
+                            title={job.title}
+                            company={job.company as string}
+                            country={job.country as string}
+                            city={job.city as string}
+                            logo={"https://hrty.vercel.app/uEFqB1"}
+                            daysRemaining={job.daysRemaining as number}
+                            isSaved={true}
+                          />
+                        ) : (
+                          <JobCard
+                            refetch={refetch}
+                            jobType={job.jobType as string}
+                            myJob={job}
+                            createdAt={job.createdAt}
+                            key={job.id}
+                            description={job.description ?? ""}
+                            id={job.id}
+                            title={job.title}
+                            company={job.company as string}
+                            country={job.country as string}
+                            city={job.city as string}
+                            logo={"https://hrty.vercel.app/uEFqB1"}
+                            daysRemaining={job.daysRemaining as number}
+                            isSaved={job.isSaved as boolean}
+                          />
+                        );
+                      })}
                 </div>
               </div>
             </TabsContent>
@@ -364,6 +423,7 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
                       <JobCard
                         refetch={refetch}
                         jobType={job.jobType as string}
+                        myJob={job}
                         createdAt={job.createdAt}
                         key={job.id}
                         description={job.description ?? ""}
@@ -378,6 +438,11 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
                       />
                     ))}
               </div>
+              {savedJobs.length === 0 && (
+                <div className="flex justify-center items-center py-40 border border-dashed border-gray-200 rounded-lg">
+                  <p className="text-gray-500">No saved jobs found</p>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="applications">
@@ -399,7 +464,7 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
                   />
                 ))
               ) : (
-                <div className="max-w-3xl mx-auto border-[1px] border-gray-400 py-24 border-dotted mt-24">
+                <div className="max-w-5xl mx-auto border-[1px] border-gray-400 py-40 border-dotted mt-12 rounded-lg">
                   <p className="text-center">No Job invitations found</p>
                 </div>
               )}

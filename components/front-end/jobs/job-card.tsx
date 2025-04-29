@@ -1,11 +1,13 @@
-import { Heart, BookmarkIcon as BookmarkSimple, Wifi } from "lucide-react";
+import { Heart, Wifi } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { getTimeAgo } from "@/lib/getTimeAgo";
 import Link from "next/link";
 import { JobApplicationDialog } from "./application-dialog";
-import { useJobs } from "@/hooks/useJobsHook";
 import { FaHeart } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { useIsaved } from "@/hooks/useIsaved";
+import { JobCTO } from "@/types/types";
+
+export type NewProps = Omit<JobCTO, "User" | "category" | "applications">;
 
 interface JobCardProps {
   id: string;
@@ -21,6 +23,7 @@ interface JobCardProps {
   jobType: string;
   refetch?: any;
   isSaved: boolean;
+  myJob: NewProps;
 }
 
 export function JobCard({
@@ -29,37 +32,16 @@ export function JobCard({
   city,
   company,
   country,
-  logo,
   daysRemaining,
   showSaveButton = false,
   description,
   createdAt,
   jobType,
   isSaved,
-  refetch,
+
+  myJob,
 }: JobCardProps) {
-  const { jobUpdated } = useJobs();
-  const router = useRouter();
-
-  async function handleUpdateSaved() {
-    // console.log("Is Saved ✅:", isSaved);
-    const dataToUpdate = isSaved ? false : true;
-
-    const dataToSend = {
-      isSaved: dataToUpdate,
-      favourites: true,
-    };
-
-    try {
-      jobUpdated({ data: dataToSend, id });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      await refetch();
-      router.refresh();
-      router.prefetch("/jobs");
-    }
-  }
+  const { handleSave } = useIsaved((state) => state);
 
   return (
     <Card className="w-full max-w-md shadow-sm">
@@ -75,7 +57,7 @@ export function JobCard({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => handleUpdateSaved()}
+              onClick={() => handleSave(myJob)}
               className="text-gray-500 hover:text-gray-700"
             >
               {isSaved === true ? (

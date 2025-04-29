@@ -4,7 +4,6 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
   Sparkles,
 } from "lucide-react";
@@ -133,25 +132,29 @@ export function Header({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <Sparkles />
-                    <Link href="/update">Profile Settings</Link>
-                  </DropdownMenuItem>
+                  {session?.user.role === "USER" && (
+                    <DropdownMenuItem>
+                      <Sparkles />
+                      <Link href="/update">Profile Settings</Link>
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <BadgeCheck />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  {session?.user.role !== "USER" && (
+                    <DropdownMenuItem>
+                      <BadgeCheck />
+                      <Link href="/dashboard">Dashboard</Link>
+                    </DropdownMenuItem>
+                  )}
+                  {/* <DropdownMenuItem>
                     <CreditCard />
                     Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  </DropdownMenuItem> */}
+                  {/* <DropdownMenuItem>
                     <Bell />
                     Notifications
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

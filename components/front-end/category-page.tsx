@@ -9,29 +9,6 @@ import CategoryPageSkeleton from "./skeletons/category-page-skeleton";
 import { JobCard } from "./jobs/job-card";
 import JobCardSkeleton from "./skeletons/job-card-skeleton";
 
-// Helper function to format date
-function formatDate(dateString: Date) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 1) {
-    return "Posted yesterday";
-  } else if (diffDays < 7) {
-    return `Posted ${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `Posted ${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
-  } else {
-    return `Posted on ${date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })}`;
-  }
-}
-
 export default function CategoryDetailPage({ slug }: { slug: string }) {
   const { category, isLoading } = useCategory(slug);
 
@@ -128,6 +105,7 @@ export default function CategoryDetailPage({ slug }: { slug: string }) {
                 .slice(0, 4)
                 .map((job) => (
                   <JobCard
+                    myJob={job}
                     isSaved={job.isSaved as boolean}
                     jobType={job.jobType}
                     createdAt={job.createdAt}
