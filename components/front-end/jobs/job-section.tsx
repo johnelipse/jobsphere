@@ -116,7 +116,7 @@ export function JobSection({
                     </CarouselItem>
                   ))}
             </CarouselContent>
-            <div className="flex absolute top-0 right-12 gap-2 mt-4">
+            <div className="flex absolute -top-10 right-12 gap-1 mt-4">
               <CarouselPrevious />
               <CarouselNext />
             </div>

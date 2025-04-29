@@ -193,7 +193,7 @@ export default function JobsPage({ users }: { users: NewUserProps[] }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-2 md:px-4">
         <Tabs defaultValue="find-job" className="w-full">
           <TabsList className="grid grid-cols-4 max-w-3xl border-b rounded-none bg-transparent h-auto">
             <TabsTrigger

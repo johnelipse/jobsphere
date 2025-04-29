@@ -172,7 +172,7 @@ export function JobCreationForm() {
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus size={16} />
-          Create Job
+          <span className="hidden md:block">Create Job</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">

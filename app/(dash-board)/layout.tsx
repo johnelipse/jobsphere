@@ -39,7 +39,7 @@ export default async function BackEndLayout({
             </div>
           </div>
         </header>
-        <div className="flex max-w-5xl mx-auto w-full min-h-screen">
+        <div className="flex max-w-5xl mx-auto w-full min-h-screen px-4">
           {children}
         </div>
       </SidebarInset>

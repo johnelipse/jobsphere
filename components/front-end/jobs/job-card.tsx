@@ -72,7 +72,7 @@ export function JobCard({
         <div className="space-y-1">
           <Link
             href={`/jobs/${id}`}
-            className="text-lg font-semibold text-purple-950"
+            className="text-lg font-semibold text-purple-950 line-clamp-1"
           >
             {title}
           </Link>
