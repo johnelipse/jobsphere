@@ -7,6 +7,7 @@ import { siteConfig } from "@/constants/site";
 import { toast } from "@mosespace/toast";
 import { Eye, EyeOff, Loader } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
@@ -166,7 +167,15 @@ export default function LoginForm() {
       <div className="w-full max-w-md relative z-50 space-y-6">
         <div className="text-center space-y-6">
           <span className="font-bold text-primary underline underline-offset-[8px]">
-            {siteConfig.name}
+            <Link href="/" className="flex items-center justify-center">
+              <Image
+                width={324}
+                height={124}
+                src="/app-logo.png"
+                className="w-auto h-[2.7rem]"
+                alt="logo"
+              />
+            </Link>
           </span>
           <h1 className="text-3xl text-white font-semibold">Welcome back</h1>
         </div>

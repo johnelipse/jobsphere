@@ -1,10 +1,11 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import Providers from '@/components/providers';
+import type { Metadata } from "next";
+import "./globals.css";
+import Providers from "@/components/providers";
+import { siteConfig } from "@/constants/site";
 
 export const metadata: Metadata = {
-  title: 'EPMS | Employee Payroll Management System',
-  description: 'crafted by @mosespace',
+  title: siteConfig.name,
+  description: siteConfig.description,
 };
 
 export default function RootLayout({

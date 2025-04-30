@@ -1,5 +1,4 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -10,6 +9,17 @@ export const ourFileRouter = {
     pdf: {
       maxFileCount: 1,
       maxFileSize: "4MB",
+    },
+  }).onUploadComplete(async ({ metadata, file }) => {
+    console.log("PDF upload complete");
+    console.log("file url", file.url);
+    return { uploadedBy: "john" };
+  }),
+
+  profileUploader: f({
+    image: {
+      maxFileCount: 1,
+      maxFileSize: "1MB",
     },
   })
     // Set permissions and file types for this FileRoute

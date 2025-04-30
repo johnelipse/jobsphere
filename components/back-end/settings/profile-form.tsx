@@ -1,36 +1,27 @@
 "use client";
 
 import { updateProfile } from "@/actions/users";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { toast } from "@mosespace/toast";
-import { Badge, Upload, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form"; // Import FormProvider
-import Select from "react-tailwindcss-select";
-import { Option } from "react-tailwindcss-select/dist/components/type";
 import { z } from "zod";
-import CustomDatePicker from "../re-usable-inputs/custom-date-picker";
 import CustomTextArea from "../re-usable-inputs/custom-text-area";
 import CustomText from "../re-usable-inputs/text-reusable";
-import { User } from "@prisma/client";
-import { Input } from "@/components/ui/input";
-import { FormMessage } from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
+import type { User } from "@prisma/client";
+import ImageInput from "../re-usable-inputs/single-image";
+import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
+  email: z
+    .string()
+    .email({
+      message: "Please enter a valid email address.",
+    })
+    .optional()
+    .or(z.literal("")),
   personalEmail: z
     .string()
     .email({
@@ -38,21 +29,47 @@ const formSchema = z.object({
     })
     .optional()
     .or(z.literal("")),
-  dateOfBirth: z.date().optional(),
-  skills: z.array(z.string()),
-  notes: z.string().optional(),
+  linkedin: z
+    .string()
+    .url({ message: "Please enter a valid LinkedIn URL." })
+    .optional()
+    .or(z.literal("")),
+  headline: z
+    .string()
+    .max(100, { message: "Headline must be at most 100 characters." })
+    .optional()
+    .or(z.literal("")),
+  github: z
+    .string()
+    .url({ message: "Please enter a valid GitHub URL." })
+    .optional()
+    .or(z.literal("")),
+  website: z
+    .string()
+    .url({ message: "Please enter a valid website URL." })
+    .optional()
+    .or(z.literal("")),
+  // skills: z.array(z.string()),
+  summary: z.string().optional().or(z.literal("")),
+  // image: z.string().optional().or(z.literal("")),
 });
 
 export function ProfileForm({ user }: { user: User | null }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [gender, setGender] = useState<Option | null>(null);
-  const [status, setStatus] = useState<Option | null>(null);
-  const [bloodGroup, setBloodGroup] = useState<Option | null>(null);
-
+  const initialImage = user?.image || "/placeholder.svg";
+  const [imageUrl, setImageUrl] = useState(initialImage);
   const methods = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
-      ...user,
-      skills: (user?.skills as string[]) || [],
+      name: user?.name || "",
+      email: user?.email || "",
+      personalEmail: user?.email || "",
+      linkedin: user?.linkedin || "",
+      headline: user?.headline || "",
+      github: user?.github || "",
+      website: user?.website || "",
+      // skills: (user?.skills as string[]) || [],
+      summary: user?.summary || "",
+      // image: user?.image || "",
     },
   });
 
@@ -67,30 +84,33 @@ export function ProfileForm({ user }: { user: User | null }) {
   } = methods;
 
   const [skillInput, setSkillInput] = useState("");
-  const addSkill = () => {
-    if (skillInput.trim() === "") return;
 
-    const currentSkills = getValues("skills") || [];
-    if (!currentSkills.includes(skillInput.trim())) {
-      setValue("skills", [...currentSkills, skillInput.trim()]);
-    }
-    setSkillInput("");
-  };
+  // const handleAddSkill = () => {
+  //   if (skillInput.trim() === "") return;
 
-  // Function to remove a skill from the requiredSkills array
-  const removeSkill = (skillToRemove: string) => {
-    const currentSkills = getValues("skills") || [];
-    setValue(
-      "skills",
-      currentSkills.filter((skill) => skill !== skillToRemove)
-    );
-  };
+  //   const currentSkills = methods.getValues("skills") || [];
+  //   if (!currentSkills.includes(skillInput)) {
+  //     methods.setValue("skills", [...currentSkills, skillInput]);
+  //     setSkillInput("");
+  //   }
+  // };
 
-  async function onSubmit(values: any) {
+  // // Handle removing a skill
+  // const handleRemoveSkill = (skillToRemove: string) => {
+  //   const currentSkills = methods.getValues("skills") || [];
+  //   methods.setValue(
+  //     "skills",
+  //     currentSkills.filter((skill) => skill !== skillToRemove)
+  //   );
+  // };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const image = imageUrl;
     setIsLoading(true);
     try {
       const formData = {
         ...values,
+        image,
       };
 
       const result = await updateProfile(formData);
@@ -114,45 +134,13 @@ export function ProfileForm({ user }: { user: User | null }) {
   return (
     <>
       <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-          <Avatar className="w-24 h-24">
-            <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
-            <AvatarFallback className="text-2xl">
-              {user?.name?.charAt(0) || "U"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="space-y-2">
-            <h3 className="font-medium">Profile Picture</h3>
-            <p className="text-sm text-muted-foreground">
-              This will be displayed on your profile and in comments.
-            </p>
-            <div className="flex gap-2">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="mt-2">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Change
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Edit profile</DialogTitle>
-                    <DialogDescription>
-                      Make changes to your profile here. Click save when you're
-                      done.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4"></div>
-                  <DialogFooter>
-                    <Button type="submit">Save changes</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-              <Button variant="outline" size="sm" className="mt-2">
-                Remove
-              </Button>
-            </div>
-          </div>
+        <div className="max-w-md mx-auto">
+          <ImageInput
+            title="Profile Image"
+            imageUrl={imageUrl}
+            setImageUrl={setImageUrl}
+            endpoint="profileUploader"
+          />
         </div>
 
         {/* Wrap the form with FormProvider */}
@@ -201,6 +189,7 @@ export function ProfileForm({ user }: { user: User | null }) {
               />
               <CustomText
                 label="GitHub Profile"
+                isRequired={false}
                 register={register}
                 name="github"
                 errors={errors}
@@ -219,50 +208,51 @@ export function ProfileForm({ user }: { user: User | null }) {
                 disabled={isLoading}
                 className="w-full"
               />
-              <CustomDatePicker
-                label="Date Of Birth (D.O.B)"
-                name="dateOfBirth"
-                control={control}
-                errors={errors}
-                className=""
-              />
             </div>
             {/* Required Skills */}
-            <div>
-              <Label>Required Skills</Label>
+            {/* <div className="space-y-2">
+              <FormLabel>Skills</FormLabel>
               <div className="flex flex-wrap gap-2 mb-2">
-                {(watch("skills") || []).map((skill) => (
-                  <Badge key={skill} className="text-sm py-1">
+                {methods.getValues("skills")?.map((skill) => (
+                  <Badge
+                    key={skill}
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
                     {skill}
                     <button
                       type="button"
-                      onClick={() => removeSkill(skill)}
-                      className="ml-1 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleRemoveSkill(skill)}
+                      className="ml-1 rounded-full hover:bg-muted p-0.5"
                     >
                       <X className="h-3 w-3" />
+                      <span className="sr-only">Remove {skill}</span>
                     </button>
                   </Badge>
                 ))}
               </div>
               <div className="flex gap-2">
                 <Input
+                  placeholder="Add a skill"
                   value={skillInput}
                   onChange={(e) => setSkillInput(e.target.value)}
-                  placeholder="Add a skill"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      addSkill();
+                      handleAddSkill();
                     }
                   }}
                 />
-                <Button type="button" onClick={addSkill} variant="outline">
+                <Button type="button" onClick={handleAddSkill}>
+                  <Plus className="h-4 w-4 mr-2" />
                   Add
                 </Button>
               </div>
-              <div>Press Enter or click Add to add a skill</div>
-              <FormMessage />
-            </div>
+              <FormDescription>
+                Add skills that showcase your expertise (e.g., JavaScript,
+                React, UI Design).
+              </FormDescription>
+            </div> */}
 
             <CustomTextArea
               label="Notes"

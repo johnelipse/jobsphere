@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Bell,
-  Briefcase,
-  CreditCard,
-  Home,
-  Palette,
-  Shield,
-  User2,
-} from "lucide-react";
+import { Home, Shield, User2 } from "lucide-react";
 import { useState } from "react";
 
 import { Separator } from "@/components/ui/separator";
@@ -96,18 +88,6 @@ export default function SettingsLayout({ user }: { user: User | null }) {
             <Home size={16} />
             <span>Address</span>
           </button>
-          <button
-            onClick={() => setActiveTab("employment")}
-            className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === "employment"
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }`}
-          >
-            <Briefcase size={16} />
-            <span>Employment</span>
-          </button>
-
           <div className="font-medium text-sm text-muted-foreground mt-6 mb-2">
             Account
           </div>
@@ -121,43 +101,6 @@ export default function SettingsLayout({ user }: { user: User | null }) {
           >
             <Shield size={16} />
             <span>Security</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("banking")}
-            className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === "banking"
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }`}
-          >
-            <CreditCard size={16} />
-            <span>Banking</span>
-          </button>
-
-          <div className="font-medium text-sm text-muted-foreground mt-6 mb-2">
-            Preferences
-          </div>
-          <button
-            onClick={() => setActiveTab("notifications")}
-            className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === "notifications"
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }`}
-          >
-            <Bell size={16} />
-            <span>Notifications</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("appearance")}
-            className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors ${
-              activeTab === "appearance"
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }`}
-          >
-            <Palette size={16} />
-            <span>Appearance</span>
           </button>
         </div>
 
@@ -183,17 +126,6 @@ export default function SettingsLayout({ user }: { user: User | null }) {
                 <AddressSettings user={user} />
               </div>
             )}
-
-            {activeTab === "employment" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Employment Details</h2>
-                <p className="text-muted-foreground">
-                  View and update your employment information.
-                </p>
-                <EmploymentSettings user={user} />
-              </div>
-            )}
-
             {activeTab === "security" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Security Settings</h2>
@@ -201,37 +133,6 @@ export default function SettingsLayout({ user }: { user: User | null }) {
                   Manage your password and account security preferences.
                 </p>
                 <SecuritySettings />
-              </div>
-            )}
-
-            {activeTab === "banking" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Banking Information</h2>
-                <p className="text-muted-foreground">
-                  Manage your banking details for salary payments.
-                </p>
-                <BankingSettings />
-              </div>
-            )}
-
-            {activeTab === "notifications" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Notification Preferences</h2>
-                <p className="text-muted-foreground">
-                  Control which notifications you receive and how you receive
-                  them.
-                </p>
-                <NotificationSettings />
-              </div>
-            )}
-
-            {activeTab === "appearance" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Appearance</h2>
-                <p className="text-muted-foreground">
-                  Customize how the application looks for you.
-                </p>
-                {/* <AppearanceSettings /> */}
               </div>
             )}
           </div>

@@ -1,6 +1,7 @@
 import SignUpForm from "@/components/sign-up-form";
 import { siteConfig } from "@/constants/site";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -17,22 +18,26 @@ export default function SignUpPage() {
           alt="Authentication background"
           className="absolute inset-0 object-cover w-full h-full brightness-50"
         />
-        <div className="relative z-20 flex items-center text-lg font-medium">
-          <img
-            src={siteConfig.logo}
-            className="mr-2 h-8 w-8"
-            alt={siteConfig.name}
+        <Link href="/" className="flex items-center">
+          <Image
+            width={324}
+            height={124}
+            src="/app-logo.png"
+            className="w-auto h-[2.7rem]"
+            alt="logo"
           />
-          {siteConfig.name}
-        </div>
+        </Link>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              "This platform has transformed how we manage our employees. The
-              onboarding process was smooth, and the dashboard provides all the
-              insights we need."
+              "This platform is a smart job-connecting platform designed to
+              seamlessly link employers with qualified job seekers, offering
+              tools for job posting, applicant tracking, hiring, and activity
+              logging—all within a modern, efficient, and user-friendly system."
             </p>
-            <footer className="text-sm">Sofia Davis, CEO at TechCorp</footer>
+            <footer className="text-sm">
+              John Banyweire, Web Developder at Desishub
+            </footer>
           </blockquote>
         </div>
       </div>
@@ -40,10 +45,10 @@ export default function SignUpPage() {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Create a company account
+              Create Your First account
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your details below to create your company account
+              Enter your details below to create your account
             </p>
           </div>
           <SignUpForm />
